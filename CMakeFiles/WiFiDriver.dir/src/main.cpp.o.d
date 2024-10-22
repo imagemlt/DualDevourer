@@ -801,6 +801,7 @@ CMakeFiles/WiFiDriver.dir/src/main.cpp.o: \
   /data/data/com.termux/files/home/devourer_tx/src/logger.h \
   /data/data/com.termux/files/home/devourer_tx/src/WiFiDriver.h \
   /data/data/com.termux/files/home/devourer_tx/src/Rtl8812aDevice.h \
+  /data/data/com.termux/files/usr/include/c++/v1/iomanip \
   /data/data/com.termux/files/home/devourer_tx/src/HalModule.h \
   /data/data/com.termux/files/home/devourer_tx/src/EepromManager.h \
   /data/data/com.termux/files/home/devourer_tx/hal/HalVerDef.h \
@@ -816,5 +817,4 @@ CMakeFiles/WiFiDriver.dir/src/main.cpp.o: \
   /data/data/com.termux/files/home/devourer_tx/src/ParsedRadioPacket.h \
   /data/data/com.termux/files/home/devourer_tx/src/FrameParser.h \
   /data/data/com.termux/files/usr/include/c++/v1/span \
-  /data/data/com.termux/files/usr/include/c++/v1/__fwd/span.h \
-  /data/data/com.termux/files/usr/include/c++/v1/iomanip
+  /data/data/com.termux/files/usr/include/c++/v1/__fwd/span.h

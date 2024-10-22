@@ -70,6 +70,9 @@ __inline static u32 _RND8(u32 sz) {
   return val;
 }
 
+
+
+
 std::vector<Packet> FrameParser::recvbuf2recvframe(std::span<uint8_t> ptr) {
   auto pbuf = ptr;
   auto pkt_cnt = GET_RX_STATUS_DESC_USB_AGG_PKTNUM_8812(pbuf.data());
@@ -177,7 +180,7 @@ void rtl8812a_cal_txdesc_chksum(uint8_t *ptxdesc)
 
 int rtw_action_frame_parse(const u8 *frame, u32 frame_len, u8 *category, u8 *action)
 {
-	const u8 *frame_body = frame + sizeof(struct rtw_ieee80211_hdr_3addr);
+	/*const u8 *frame_body = frame + sizeof(struct rtw_ieee80211_hdr_3addr);
 	u16 fc;
 	u8 c;
 	u8 a = ACT_PUBLIC_MAX;
@@ -192,7 +195,7 @@ int rtw_action_frame_parse(const u8 *frame, u32 frame_len, u8 *category, u8 *act
 	c = frame_body[0];
 
 	switch (c) {
-	case RTW_WLAN_CATEGORY_P2P: /* vendor-specific */
+	case RTW_WLAN_CATEGORY_P2P: // vendor-specific 
 		break;
 	default:
 		a = frame_body[1];
@@ -202,58 +205,12 @@ int rtw_action_frame_parse(const u8 *frame, u32 frame_len, u8 *category, u8 *act
 		*category = c;
 	if (action)
 		*action = a;
-
+*/
 	return _TRUE;
+	
 }
 
 void radiotap_to_txdesc(uint8_t *packet,uint8_t *usb_frame){
-  int rtap_len;
-	int qos_len = 0;
-	int dot11_hdr_len = 24;
-	int snap_len = 6;
-	unsigned char *pdata;
-	u16 frame_ctl;
-	unsigned char src_mac_addr[6];
-	unsigned char dst_mac_addr[6];
-	struct rtw_ieee80211_hdr *dot11_hdr;
-	struct ieee80211_radiotap_header *rtap_hdr;
-	//_adapter *padapter = (_adapter *)rtw_netdev_priv(ndev);
-
-  rtap_hdr = (struct ieee80211_radiotap_header *)packet;
-  rtap_len = ieee80211_get_radiotap_len(packet);
-  if (rtap_len != 14) { //长度不匹配
-		RTW_INFO("radiotap len (should be 14): %d\n", rtap_len);
-		return
-	}
-  dot11_addr = (struct rtw_ieee80211_hdr*)(packet + rtap_len);
-
-  frame_ctl = le16_to_cpu(dot11_hdr->frame_ctl);
-
-  struct pkt_attrib	*pattrib;
-
-  struct rtw_ieee80211_hdr *pwlanhdr;
-
-  u8 *buf = packet + 14;
-	u32 len = sizeof(packet) - 14;
-	u8 category, action;
-	int type = -1;
-
-  if (rtw_action_frame_parse(buf, len, &category, &action) == _FALSE) {
-			/*RTW_INFO(FUNC_NDEV_FMT" frame_control:0x%x\n", FUNC_NDEV_ARG(ndev),
-				le16_to_cpu(((struct rtw_ieee80211_hdr_3addr *)buf)->frame_ctl));*/
-			return;
-	}
-
-  pattrib = new struct pkt_attrib;
-  pattrib->hdrlen = 24;
-	pattrib->nr_frags = 1;
-	pattrib->priority = 7;
-	pattrib->inject = 0xa5;
-
-  pattrib->mac_id = RTW_DEFAULT_MGMT_MACID;
-	pattrib->qsel = QSLT_MGNT;
-
-  pattrib->pktlen = 0;
   
   //未完待续
 

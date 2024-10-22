@@ -3,7 +3,7 @@
 
 #include "logger.h"
 #include <span>
-#include <net/ieee80211_radiotap.h>
+//#include <net/ieee80211_radiotap.h>
 
 typedef unsigned int __u32;
 
@@ -29,6 +29,7 @@ typedef signed char s8;
 #ifndef BIT
   #define BIT(x)	(1 << (x))
 #endif
+#define ETH_ALEN 6
 #define TXDESC_SIZE 40
 #define cpu_to_le32(x) ((__u32)(x))
 #define le32_to_cpu(x) ((__u32)(x))
@@ -189,6 +190,73 @@ typedef signed char s8;
 #define RTW_IEEE80211_FTYPE_MGMT 0x0000
 #define RTW_IEEE80211_STYPE_ACTION 0x00d0
 
+// radiotap 
+#define MAX_RX_INTERFACES  8
+
+// offset of MCS_FLAGS and MCS index
+#define MCS_FLAGS_OFF 11
+#define MCS_IDX_OFF 12
+
+// offset of VHT information
+#define VHT_FLAGS_OFF 12
+#define VHT_BW_OFF 13
+#define VHT_MCSNSS0_OFF 14
+#define VHT_CODING_OFF 18
+
+//the last four bytes used for channel_id
+#define SRC_MAC_THIRD_BYTE 12
+#define DST_MAC_THIRD_BYTE 18
+#define FRAME_SEQ_LB 22
+#define FRAME_SEQ_HB 23
+
+#define FRAME_TYPE_DATA  0x08
+#define FRAME_TYPE_RTS   0xb4
+
+
+
+#define IEEE80211_RADIOTAP_MCS_HAVE_BW    0x01
+#define IEEE80211_RADIOTAP_MCS_HAVE_MCS   0x02
+#define IEEE80211_RADIOTAP_MCS_HAVE_GI    0x04
+#define IEEE80211_RADIOTAP_MCS_HAVE_FMT   0x08
+
+#define IEEE80211_RADIOTAP_MCS_BW_20    0
+#define IEEE80211_RADIOTAP_MCS_BW_40    1
+#define IEEE80211_RADIOTAP_MCS_BW_20L   2
+#define IEEE80211_RADIOTAP_MCS_BW_20U   3
+#define IEEE80211_RADIOTAP_MCS_SGI      0x04
+#define IEEE80211_RADIOTAP_MCS_FMT_GF   0x08
+
+#define IEEE80211_RADIOTAP_MCS_HAVE_FEC   0x10
+#define IEEE80211_RADIOTAP_MCS_HAVE_STBC  0x20
+#define IEEE80211_RADIOTAP_MCS_FEC_LDPC   0x10
+#define	IEEE80211_RADIOTAP_MCS_STBC_MASK  0x60
+#define	IEEE80211_RADIOTAP_MCS_STBC_1  1
+#define	IEEE80211_RADIOTAP_MCS_STBC_2  2
+#define	IEEE80211_RADIOTAP_MCS_STBC_3  3
+#define	IEEE80211_RADIOTAP_MCS_STBC_SHIFT 5
+
+#define IEEE80211_RADIOTAP_VHT_FLAG_STBC    0x01
+#define IEEE80211_RADIOTAP_VHT_FLAG_SGI     0x04
+#define	IEEE80211_RADIOTAP_VHT_MCS_MASK     0xF0
+#define	IEEE80211_RADIOTAP_VHT_NSS_MASK     0x0F
+#define	IEEE80211_RADIOTAP_VHT_MCS_SHIFT    4
+#define	IEEE80211_RADIOTAP_VHT_NSS_SHIFT    0
+#define IEEE80211_RADIOTAP_VHT_BW_20M       0x00
+#define IEEE80211_RADIOTAP_VHT_BW_40M       0x01
+#define IEEE80211_RADIOTAP_VHT_BW_80M       0x04
+#define IEEE80211_RADIOTAP_VHT_BW_160M      0x0B
+#define IEEE80211_RADIOTAP_VHT_CODING_LDPC_USER0    0x01
+
+#define IEEE80211_RADIOTAP_MCS_BW_MASK          0x03
+
+
+#define MCS_KNOWN (IEEE80211_RADIOTAP_MCS_HAVE_MCS | IEEE80211_RADIOTAP_MCS_HAVE_BW | IEEE80211_RADIOTAP_MCS_HAVE_GI | IEEE80211_RADIOTAP_MCS_HAVE_STBC | IEEE80211_RADIOTAP_MCS_HAVE_FEC)
+
+
+union Keytype {
+        u8   skey[16];
+        u32    lkey[4];
+};
 enum _PUBLIC_ACTION {
 	ACT_PUBLIC_BSSCOEXIST = 0, /* 20/40 BSS Coexistence */
 	ACT_PUBLIC_DSE_ENABLE = 1,
@@ -413,3 +481,4 @@ void rtl8812a_cal_txdesc_chksum(uint8_t *ptxdesc);
 #endif /* FRAMEPARSER_H */
 
 void radiotap_to_txdesc(uint8_t *packet,uint8_t *usb_frame);
+

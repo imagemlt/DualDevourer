@@ -317,75 +317,15 @@ void RtlUsbAdapter::GetChipOutEP8812() {
                 OutEpNumber);
 }
 
-bool RtlUsbAdapter::send_packet(const uint8_t* packet, size_t length) {
-  struct tx_desc *ptxdesc;
-  uint8_t* usb_frame;
-  struct ieee80211_radiotap_header *rtap_hdr;
-  int real_packet_length,usb_frame_length,radiotap_length;
-
-  radiotap_length = int(packet[2]);
-  real_packet_length = length - radiotap_length;
-  usb_frame_length = real_packet_length + TXDESC_SIZE;
-
-  usb_frame = new uint8_t[usb_frame_length]();
-
-  rtap_hdr = (struct ieee80211_radiotap_header*)packet;
-
-
-  ptxdesc = (struct tx_desc *)usb_frame;
-
-  ptxdesc->txdw0 |= cpu_to_le32((unsigned int)(real_packet_length) & 0x0000ffff);
-	ptxdesc->txdw0 |= cpu_to_le32(((TXDESC_SIZE + OFFSET_SZ) << OFFSET_SHT) & 0x00ff0000); // default = 32 bytes for TX Desc 
-	ptxdesc->txdw0 |= cpu_to_le32(OWN | FSG | LSG);
-
-	ptxdesc->txdw0 |= cpu_to_le32(BIT(24));
-
-	// offset 4	 
-	ptxdesc->txdw1 |= cpu_to_le32(0x00);// MAC_ID 
-
-	ptxdesc->txdw1 |= cpu_to_le32((0x12 << QSEL_SHT) & 0x00001f00);
-
-	ptxdesc->txdw1 |= cpu_to_le32((0x01 << 16) & 0x000f0000); // b mode 
-        
-
-	SET_TX_DESC_RATE_ID_8812(usb_frame, static_cast<uint8_t>(0x07));
-  SET_TX_DESC_HWSEQ_EN_8812(usb_frame, static_cast<uint8_t>(0)); /* Hw do not set sequence number */
-	SET_TX_DESC_SEQ_8812(usb_frame, 0); /* Copy inject sequence number to TxDesc */
-
-	SET_TX_DESC_RETRY_LIMIT_ENABLE_8812(usb_frame, static_cast<uint8_t>(1));
-
-	SET_TX_DESC_DATA_RETRY_LIMIT_8812(usb_frame, static_cast<uint8_t>(0));
-
-	SET_TX_DESC_DATA_SHORT_8812(usb_frame, static_cast<uint8_t>(0));
-
-
-	SET_TX_DESC_DISABLE_FB_8812(usb_frame, static_cast<uint8_t>(1)); // svpcom: ?
-	SET_TX_DESC_USE_RATE_8812(usb_frame, static_cast<uint8_t>(1));
-	SET_TX_DESC_TX_RATE_8812(usb_frame, static_cast<uint8_t>(0x06));
-
-	SET_TX_DESC_DATA_BW_8812(usb_frame, 0); 
+bool RtlUsbAdapter::send_packet(uint8_t* packet, size_t length) {
 
   //_logger->info("Calculate chksum");
 	
-	rtl8812a_cal_txdesc_chksum(usb_frame);
-  for (size_t i = 0; i < usb_frame_length; ++i) {
-        // Print each byte as a two-digit hexadecimal number
-        std::cout << "0x" << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(usb_frame[i]);
-        
-        // Print a space between bytes, but not after the last byte
-        if (i < length - 1) {
-            std::cout << " ";
-        }
-    }
-    std::cout << std::dec << std::endl;  // Reset to decimal formatting
-	// ----- end of fill tx desc ----- 
-  uint8_t * addr=usb_frame+TXDESC_SIZE;
-  memcpy(addr,packet,real_packet_length);
-
+	
   int actual_length = 0;
   
-  int rc = libusb_bulk_transfer(_dev_handle, 0x04, usb_frame, usb_frame_length, &actual_length, USB_TIMEOUT);
-  if (rc == LIBUSB_SUCCESS && actual_length == usb_frame_length) {
+  int rc = libusb_bulk_transfer(_dev_handle, 0x04, packet, length, &actual_length, USB_TIMEOUT);
+  if (rc == LIBUSB_SUCCESS && actual_length == length) {
     _logger->info("Packet sent successfully, length: {}", length);
      return true;
   } else {

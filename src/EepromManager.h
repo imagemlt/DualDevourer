@@ -10,6 +10,8 @@
 
 typedef unsigned short ushort;
 
+
+
 class EepromManager {
   RtlUsbAdapter _device;
   Logger_t _logger;

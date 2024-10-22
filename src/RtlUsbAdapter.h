@@ -9,6 +9,7 @@
 #include "hal_com_reg.h"
 #include "logger.h"
 
+
 #define rtw_read8 rtw_read<uint8_t>
 #define rtw_read16 rtw_read<uint16_t>
 #define rtw_read32 rtw_read<uint32_t>
@@ -28,6 +29,8 @@ enum TxSele {
   TX_SELE_EQ = 1 << (3), /* Extern Queue */
 };
 
+
+
 class RtlUsbAdapter {
   libusb_device_handle *_dev_handle;
   Logger_t _logger;
@@ -44,7 +47,7 @@ public:
   uint8_t OutEpNumber;
   uint8_t rxagg_usb_size;
   uint8_t rxagg_usb_timeout;
-  bool send_packet(const uint8_t* packet, size_t length);
+  bool send_packet(uint8_t* packet, size_t length);
   void infinite_read();
   uint8_t efuse_OneByteRead(uint16_t addr, uint8_t *data);
   void phy_set_bb_reg(uint16_t regAddr, uint32_t bitMask, uint32_t data);

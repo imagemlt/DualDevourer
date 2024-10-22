@@ -14,6 +14,7 @@
 #include "FrameParser.h"
 
 #include <iomanip>
+
 //#define USB_VENDOR_ID 0x0bda
 //#define USB_PRODUCT_ID 0x8812
 
@@ -82,7 +83,7 @@ int main_test(int argc,char **argv) {
   rtlDevice->Init(packetProcessor,SelectedChannel{
                                        .Channel = static_cast<uint8_t>(161),
                                        .ChannelOffset = 0,
-                                       .ChannelWidth = CHANNEL_WIDTH_20,
+                                       .ChannelWidth = CHANNEL_WIDTH_80,
 
 				       });
 
@@ -341,7 +342,7 @@ int main(int argc,char **argv) {
   rtlDevice->Init(packetProcessor,SelectedChannel{
                                        .Channel = static_cast<uint8_t>(161),
                                        .ChannelOffset = 0,
-                                       .ChannelWidth = CHANNEL_WIDTH_20,
+                                       .ChannelWidth = CHANNEL_WIDTH_40,
 
 				       });
 
@@ -353,6 +354,7 @@ int main(int argc,char **argv) {
   sleep(5);
  
   uint8_t beacon_frame[]= {
+	  0x00 ,0x00 ,0x0d, 0x00 ,0x00, 0x80, 0x08, 0x00, 0x08, 0x00, 0x37, 0x00, 0x01,
     0x08, 0x01, 0x00, 0x00, 0xff, 0xff, 0xff, 0xff,
     0xff, 0xff, 0x57, 0x42, 0x75, 0x05, 0xd6, 0x00,
     0x57, 0x42, 0x75, 0x05, 0xd6, 0x00, 0x00, 0x00,
@@ -368,7 +370,91 @@ int main(int argc,char **argv) {
     0xf8, 0xaa, 0xec, 0x83, 0xbb, 0x52, 0xa0, 0x52,
     0xa3, 0xde, 0xe1, 0x75, 0x19, 0x51, 0x96, 0xe0,
     0x4d, 0x96, 0x4c, 0xe4
-};
+  };
+  
+
+  uint8_t stbc;
+  bool ldpc;
+  bool short_gi;
+  uint8_t bandwidth;
+  uint8_t mcs_index;
+  bool vht_mode;
+  uint8_t vht_nss;
+
+  if(beacon_frame[2] == 0x0d){
+    vht_mode = false;
+    
+    uint8_t flags = beacon_frame[MCS_FLAGS_OFF];
+    switch (flags & IEEE80211_RADIOTAP_MCS_BW_MASK) {
+        case IEEE80211_RADIOTAP_MCS_BW_20:
+            bandwidth = 20;
+            break;
+        case IEEE80211_RADIOTAP_MCS_BW_40:
+            bandwidth = 40;
+            break;
+        case IEEE80211_RADIOTAP_MCS_BW_20L:
+        case IEEE80211_RADIOTAP_MCS_BW_20U:
+            bandwidth = 20; // Assuming these are variations of 20 MHz
+            break;
+        default:
+            throw std::runtime_error("Unsupported bandwidth in flags");
+    }
+
+    // Parse Short GI
+    if (flags & IEEE80211_RADIOTAP_MCS_SGI) {
+        short_gi = true;
+    }
+
+    // Parse STBC
+    stbc = (flags & IEEE80211_RADIOTAP_MCS_STBC_MASK) >> IEEE80211_RADIOTAP_MCS_STBC_SHIFT;
+
+    // Parse LDPC
+    if (flags & IEEE80211_RADIOTAP_MCS_FEC_LDPC) {
+        ldpc = true;
+    }
+    
+    mcs_index = beacon_frame[MCS_IDX_OFF];
+
+  }else{
+    vht_mode = true;
+    uint8_t flags = beacon_frame[VHT_FLAGS_OFF];
+    if (flags & IEEE80211_RADIOTAP_VHT_FLAG_SGI) {
+        short_gi = true;
+    }
+    if (flags & IEEE80211_RADIOTAP_VHT_FLAG_STBC) {
+        stbc = true;
+    }
+
+    // 解析带宽
+    switch (beacon_frame[VHT_BW_OFF]) {
+        case IEEE80211_RADIOTAP_VHT_BW_20M:
+            bandwidth = 20;
+            break;
+        case IEEE80211_RADIOTAP_VHT_BW_40M:
+            bandwidth = 40;
+            break;
+        case IEEE80211_RADIOTAP_VHT_BW_80M:
+            bandwidth = 80;
+            break;
+        case IEEE80211_RADIOTAP_VHT_BW_160M:
+            bandwidth = 160;
+            break;
+        default:
+            throw std::runtime_error("Unsupported VHT bandwidth in header");
+    }
+
+    // 解析LDPC
+    if (beacon_frame[VHT_CODING_OFF] & IEEE80211_RADIOTAP_VHT_CODING_LDPC_USER0) {
+        ldpc = true;
+    }
+
+    // 解析MCS索引和NSS
+    mcs_index = (beacon_frame[VHT_MCSNSS0_OFF] & IEEE80211_RADIOTAP_VHT_MCS_MASK) >> IEEE80211_RADIOTAP_VHT_MCS_SHIFT;
+    vht_nss = (beacon_frame[VHT_MCSNSS0_OFF] & IEEE80211_RADIOTAP_VHT_NSS_MASK) >> IEEE80211_RADIOTAP_VHT_NSS_SHIFT;
+  }
+  logger->info("uint8_t stbc = {};bool ldpc = {};bool short_gi={};uint8_t bandwidth={};uint8_t mcs_index={};bool vht_mode={};uint8_t vht_nss={};",stbc,ldpc,short_gi,bandwidth,mcs_index,vht_mode,vht_nss);
+  //std::cout << "Packet Report Type: " << attrib.pkt_rpt_type << std::endl;
+  //logger->debug("parsed radiotap header to rx_pkt_attrib,{}",pattrib);
   
   int actual_length = 0;
   

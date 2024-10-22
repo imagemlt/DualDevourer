@@ -674,6 +674,40 @@ CMakeFiles/WiFiDriver.dir/src/WiFiDriver.cpp.o: \
   /data/data/com.termux/files/usr/include/c++/v1/__functional/pointer_to_binary_function.h \
   /data/data/com.termux/files/usr/include/c++/v1/__functional/pointer_to_unary_function.h \
   /data/data/com.termux/files/usr/include/c++/v1/__functional/unary_negate.h \
+  /data/data/com.termux/files/usr/include/c++/v1/iostream \
+  /data/data/com.termux/files/usr/include/c++/v1/ios \
+  /data/data/com.termux/files/usr/include/c++/v1/__ios/fpos.h \
+  /data/data/com.termux/files/usr/include/c++/v1/__locale \
+  /data/data/com.termux/files/usr/include/c++/v1/cctype \
+  /data/data/com.termux/files/usr/include/c++/v1/ctype.h \
+  /data/data/com.termux/files/usr/include/ctype.h \
+  /data/data/com.termux/files/usr/include/bits/ctype_inlines.h \
+  /data/data/com.termux/files/usr/include/c++/v1/locale.h \
+  /data/data/com.termux/files/usr/include/locale.h \
+  /data/data/com.termux/files/usr/include/c++/v1/mutex \
+  /data/data/com.termux/files/usr/include/c++/v1/__mutex_base \
+  /data/data/com.termux/files/usr/include/c++/v1/system_error \
+  /data/data/com.termux/files/usr/include/c++/v1/__errc \
+  /data/data/com.termux/files/usr/include/c++/v1/cerrno \
+  /data/data/com.termux/files/usr/include/c++/v1/string \
+  /data/data/com.termux/files/usr/include/c++/v1/__string/char_traits.h \
+  /data/data/com.termux/files/usr/include/c++/v1/cstdio \
+  /data/data/com.termux/files/usr/include/c++/v1/cwchar \
+  /data/data/com.termux/files/usr/include/c++/v1/cwctype \
+  /data/data/com.termux/files/usr/include/c++/v1/wctype.h \
+  /data/data/com.termux/files/usr/include/wctype.h \
+  /data/data/com.termux/files/usr/include/c++/v1/__string/extern_template_lists.h \
+  /data/data/com.termux/files/usr/include/c++/v1/string_view \
+  /data/data/com.termux/files/usr/include/c++/v1/__fwd/string_view.h \
+  /data/data/com.termux/files/usr/include/c++/v1/__support/android/locale_bionic.h \
+  /data/data/com.termux/files/usr/include/c++/v1/istream \
+  /data/data/com.termux/files/usr/include/c++/v1/ostream \
+  /data/data/com.termux/files/usr/include/c++/v1/bitset \
+  /data/data/com.termux/files/usr/include/c++/v1/locale \
+  /data/data/com.termux/files/usr/include/c++/v1/streambuf \
+  /data/data/com.termux/files/usr/include/c++/v1/__bsd_locale_fallbacks.h \
+  /data/data/com.termux/files/usr/include/c++/v1/cstdarg \
+  /data/data/com.termux/files/usr/include/c++/v1/iomanip \
   /data/data/com.termux/files/home/devourer_tx/src/logger.h \
   /data/data/com.termux/files/usr/include/spdlog/logger.h \
   /data/data/com.termux/files/usr/include/spdlog/common.h \
@@ -692,33 +726,15 @@ CMakeFiles/WiFiDriver.dir/src/WiFiDriver.cpp.o: \
   /data/data/com.termux/files/usr/include/c++/v1/__format/concepts.h \
   /data/data/com.termux/files/usr/include/c++/v1/__format/format_parse_context.h \
   /data/data/com.termux/files/usr/include/c++/v1/__format/format_error.h \
-  /data/data/com.termux/files/usr/include/c++/v1/string_view \
-  /data/data/com.termux/files/usr/include/c++/v1/__fwd/string_view.h \
-  /data/data/com.termux/files/usr/include/c++/v1/__string/char_traits.h \
-  /data/data/com.termux/files/usr/include/c++/v1/cstdio \
-  /data/data/com.termux/files/usr/include/c++/v1/cwchar \
-  /data/data/com.termux/files/usr/include/c++/v1/cwctype \
-  /data/data/com.termux/files/usr/include/c++/v1/cctype \
-  /data/data/com.termux/files/usr/include/c++/v1/ctype.h \
-  /data/data/com.termux/files/usr/include/ctype.h \
-  /data/data/com.termux/files/usr/include/bits/ctype_inlines.h \
-  /data/data/com.termux/files/usr/include/c++/v1/wctype.h \
-  /data/data/com.termux/files/usr/include/wctype.h \
   /data/data/com.termux/files/usr/include/c++/v1/__chrono/year.h \
   /data/data/com.termux/files/usr/include/c++/v1/__chrono/year_month.h \
   /data/data/com.termux/files/usr/include/c++/v1/__chrono/year_month_day.h \
   /data/data/com.termux/files/usr/include/c++/v1/__chrono/year_month_weekday.h \
   /data/data/com.termux/files/usr/include/c++/v1/__chrono/file_clock.h \
   /data/data/com.termux/files/usr/include/c++/v1/__chrono/literals.h \
-  /data/data/com.termux/files/usr/include/c++/v1/string \
-  /data/data/com.termux/files/usr/include/c++/v1/__ios/fpos.h \
-  /data/data/com.termux/files/usr/include/c++/v1/__string/extern_template_lists.h \
   /data/data/com.termux/files/usr/include/spdlog/fmt/fmt.h \
   /data/data/com.termux/files/usr/include/fmt/core.h \
   /data/data/com.termux/files/usr/include/fmt/format.h \
-  /data/data/com.termux/files/usr/include/c++/v1/system_error \
-  /data/data/com.termux/files/usr/include/c++/v1/__errc \
-  /data/data/com.termux/files/usr/include/c++/v1/cerrno \
   /data/data/com.termux/files/usr/include/spdlog/common-inl.h \
   /data/data/com.termux/files/usr/include/spdlog/details/backtracer.h \
   /data/data/com.termux/files/usr/include/spdlog/details/circular_q.h \
@@ -732,7 +748,6 @@ CMakeFiles/WiFiDriver.dir/src/WiFiDriver.cpp.o: \
   /data/data/com.termux/files/usr/include/sys/stat.h \
   /data/data/com.termux/files/usr/include/linux/stat.h \
   /data/data/com.termux/files/usr/include/c++/v1/thread \
-  /data/data/com.termux/files/usr/include/c++/v1/__mutex_base \
   /data/data/com.termux/files/usr/include/fcntl.h \
   /data/data/com.termux/files/usr/include/linux/fadvise.h \
   /data/data/com.termux/files/usr/include/linux/falloc.h \
@@ -752,7 +767,6 @@ CMakeFiles/WiFiDriver.dir/src/WiFiDriver.cpp.o: \
   /data/data/com.termux/files/usr/include/asm-generic/unistd.h \
   /data/data/com.termux/files/usr/include/bits/glibc-syscalls.h \
   /data/data/com.termux/files/usr/include/spdlog/details/log_msg_buffer-inl.h \
-  /data/data/com.termux/files/usr/include/c++/v1/mutex \
   /data/data/com.termux/files/usr/include/spdlog/details/backtracer-inl.h \
   /data/data/com.termux/files/usr/include/spdlog/logger-inl.h \
   /data/data/com.termux/files/usr/include/spdlog/pattern_formatter.h \
@@ -767,19 +781,6 @@ CMakeFiles/WiFiDriver.dir/src/WiFiDriver.cpp.o: \
   /data/data/com.termux/files/home/devourer_tx/src/HalModule.h \
   /data/data/com.termux/files/home/devourer_tx/src/EepromManager.h \
   /data/data/com.termux/files/home/devourer_tx/src/RtlUsbAdapter.h \
-  /data/data/com.termux/files/usr/include/c++/v1/iostream \
-  /data/data/com.termux/files/usr/include/c++/v1/ios \
-  /data/data/com.termux/files/usr/include/c++/v1/__locale \
-  /data/data/com.termux/files/usr/include/c++/v1/locale.h \
-  /data/data/com.termux/files/usr/include/locale.h \
-  /data/data/com.termux/files/usr/include/c++/v1/__support/android/locale_bionic.h \
-  /data/data/com.termux/files/usr/include/c++/v1/istream \
-  /data/data/com.termux/files/usr/include/c++/v1/ostream \
-  /data/data/com.termux/files/usr/include/c++/v1/bitset \
-  /data/data/com.termux/files/usr/include/c++/v1/locale \
-  /data/data/com.termux/files/usr/include/c++/v1/streambuf \
-  /data/data/com.termux/files/usr/include/c++/v1/__bsd_locale_fallbacks.h \
-  /data/data/com.termux/files/usr/include/c++/v1/cstdarg \
   /data/data/com.termux/files/usr/include/libusb-1.0/libusb.h \
   /data/data/com.termux/files/home/devourer_tx/hal/drv_types.h \
   /data/data/com.termux/files/usr/include/c++/v1/stdbool.h \
@@ -795,4 +796,7 @@ CMakeFiles/WiFiDriver.dir/src/WiFiDriver.cpp.o: \
   /data/data/com.termux/files/home/devourer_tx/src/RadioManagementModule.h \
   /data/data/com.termux/files/home/devourer_tx/src/RfPath.h \
   /data/data/com.termux/files/home/devourer_tx/src/SelectedChannel.h \
-  /data/data/com.termux/files/home/devourer_tx/src/ParsedRadioPacket.h
+  /data/data/com.termux/files/home/devourer_tx/src/ParsedRadioPacket.h \
+  /data/data/com.termux/files/home/devourer_tx/src/FrameParser.h \
+  /data/data/com.termux/files/usr/include/c++/v1/span \
+  /data/data/com.termux/files/usr/include/c++/v1/__fwd/span.h
