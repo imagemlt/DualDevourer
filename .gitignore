@@ -3,3 +3,4 @@ build
 .cache
 WiFiDriver
 Makefile
+CMakeCache.txt
