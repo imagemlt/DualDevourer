@@ -1,0 +1,3 @@
+/data/data/com.termux/files/home/devourer_tx/CMakeFiles/WiFiDriver.dir
+/data/data/com.termux/files/home/devourer_tx/CMakeFiles/edit_cache.dir
+/data/data/com.termux/files/home/devourer_tx/CMakeFiles/rebuild_cache.dir
