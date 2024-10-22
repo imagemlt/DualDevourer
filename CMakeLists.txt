@@ -7,12 +7,15 @@ find_package(PkgConfig REQUIRED)
 
 # this calls create special `PkgConfig::LIBUSB` variables
 pkg_check_modules(LIBUSB REQUIRED IMPORTED_TARGET libusb-1.0)
+pkg_check_modules(LIBPCAP REQUIRED IMPORTED_TARGET libpcap)
+pkg_check_modules(LIBSODIUM REQUIRED IMPORTED_TARGET libsodium)
 
 find_package(spdlog CONFIG REQUIRED)
 
 add_executable(WiFiDriver
     src/logger.h
     src/main.cpp
+    
 
     hal/Hal8812PhyReg.h
     hal/Hal8812PwrSeq.c
@@ -50,12 +53,16 @@ add_executable(WiFiDriver
 
 target_link_libraries(WiFiDriver PRIVATE
     PkgConfig::LIBUSB
+    PkgConfig::LIBPCAP
+    PkgConfig::LIBSODIUM
+
     # use the header-only version
     spdlog::spdlog_header_only
+    
     )
 
 set_property(TARGET WiFiDriver PROPERTY CXX_STANDARD 20)
 target_include_directories(WiFiDriver PRIVATE hal)
-
-target_compile_options(WiFiDriver PRIVATE -fno-omit-frame-pointer -fsanitize=address)
-target_link_options(WiFiDriver PRIVATE -fsanitize=address)
+target_include_directories(WiFiDriver PRIVATE wfb-ng)
+target_compile_options(WiFiDriver PRIVATE)
+target_link_options(WiFiDriver PRIVATE)

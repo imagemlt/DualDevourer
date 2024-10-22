@@ -1,5 +1,4 @@
 #include "EepromManager.h"
-
 #include "phydm_pre_define.h"
 #include "registry_priv.h"
 #include "rtl8812a_hal.h"

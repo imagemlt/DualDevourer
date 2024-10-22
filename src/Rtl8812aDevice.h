@@ -10,6 +10,7 @@
 #include "EepromManager.h"
 #include "RadioManagementModule.h"
 
+
 using Action_ParsedRadioPacket = std::function<void(const ParsedRadioPacket&)>;
 
 class Rtl8812aDevice {
@@ -24,10 +25,13 @@ public:
   Rtl8812aDevice(RtlUsbAdapter device, Logger_t logger);
   void Init(Action_ParsedRadioPacket packetProcessor, SelectedChannel channel);
   void SetMonitorChannel(SelectedChannel channel);
+  void InitWrite(SelectedChannel channel);
+  bool send_packet(const uint8_t* packet, size_t length);
 
 private:
   void StartWithMonitorMode(SelectedChannel selectedChannel);
   bool NetDevOpen(SelectedChannel selectedChannel);
+  
 };
 
 #endif /* RTL8812ADEVICE_H */

@@ -2,16 +2,17 @@
 
 #include <chrono>
 #include <thread>
-
+#include <iostream>
 #include "FrameParser.h"
 #include "Hal8812PhyReg.h"
+#include <iomanip>
 
 using namespace std::chrono_literals;
 
 RtlUsbAdapter::RtlUsbAdapter(libusb_device_handle *dev_handle, Logger_t logger)
     : _dev_handle{dev_handle}, _logger{logger} {
   InitDvObj();
-
+  
   if (usbSpeed > LIBUSB_SPEED_HIGH) // USB 3.0
   {
     rxagg_usb_size = 0x7;
@@ -62,9 +63,9 @@ void RtlUsbAdapter::infinite_read() {
     std::vector<Packet> packets =
         fp.recvbuf2recvframe(std::span<uint8_t>{buffer, (size_t)actual_length});
     for (auto &p : packets) {
-      //_logger->warn("frame control 0x{:02x} 0x{:02x}", (uint8_t)p.Data[0],
-      //(uint8_t)p.Data[1]); _logger->warn("duration id 0x{:02x} 0x{:02x}",
-      //(uint8_t)p.Data[2], (uint8_t)p.Data[3]);
+      _logger->warn("frame control 0x{:02x} 0x{:02x}", (uint8_t)p.Data[0],
+      (uint8_t)p.Data[1]); _logger->warn("duration id 0x{:02x} 0x{:02x}",
+      (uint8_t)p.Data[2], (uint8_t)p.Data[3]);
     }
     printf("received %d bytes\n", actual_length);
   }
@@ -315,6 +316,84 @@ void RtlUsbAdapter::GetChipOutEP8812() {
   _logger->info("OutEpQueueSel({}), OutEpNumber({})", OutEpQueueSel,
                 OutEpNumber);
 }
+
+bool RtlUsbAdapter::send_packet(const uint8_t* packet, size_t length) {
+  struct tx_desc *ptxdesc;
+  uint8_t* usb_frame;
+  struct ieee80211_radiotap_header *rtap_hdr;
+  int real_packet_length,usb_frame_length,radiotap_length;
+
+  radiotap_length = int(packet[2]);
+  real_packet_length = length - radiotap_length;
+  usb_frame_length = real_packet_length + TXDESC_SIZE;
+
+  usb_frame = new uint8_t[usb_frame_length]();
+
+  rtap_hdr = (struct ieee80211_radiotap_header*)packet;
+
+
+  ptxdesc = (struct tx_desc *)usb_frame;
+
+  ptxdesc->txdw0 |= cpu_to_le32((unsigned int)(real_packet_length) & 0x0000ffff);
+	ptxdesc->txdw0 |= cpu_to_le32(((TXDESC_SIZE + OFFSET_SZ) << OFFSET_SHT) & 0x00ff0000); // default = 32 bytes for TX Desc 
+	ptxdesc->txdw0 |= cpu_to_le32(OWN | FSG | LSG);
+
+	ptxdesc->txdw0 |= cpu_to_le32(BIT(24));
+
+	// offset 4	 
+	ptxdesc->txdw1 |= cpu_to_le32(0x00);// MAC_ID 
+
+	ptxdesc->txdw1 |= cpu_to_le32((0x12 << QSEL_SHT) & 0x00001f00);
+
+	ptxdesc->txdw1 |= cpu_to_le32((0x01 << 16) & 0x000f0000); // b mode 
+        
+
+	SET_TX_DESC_RATE_ID_8812(usb_frame, static_cast<uint8_t>(0x07));
+  SET_TX_DESC_HWSEQ_EN_8812(usb_frame, static_cast<uint8_t>(0)); /* Hw do not set sequence number */
+	SET_TX_DESC_SEQ_8812(usb_frame, 0); /* Copy inject sequence number to TxDesc */
+
+	SET_TX_DESC_RETRY_LIMIT_ENABLE_8812(usb_frame, static_cast<uint8_t>(1));
+
+	SET_TX_DESC_DATA_RETRY_LIMIT_8812(usb_frame, static_cast<uint8_t>(0));
+
+	SET_TX_DESC_DATA_SHORT_8812(usb_frame, static_cast<uint8_t>(0));
+
+
+	SET_TX_DESC_DISABLE_FB_8812(usb_frame, static_cast<uint8_t>(1)); // svpcom: ?
+	SET_TX_DESC_USE_RATE_8812(usb_frame, static_cast<uint8_t>(1));
+	SET_TX_DESC_TX_RATE_8812(usb_frame, static_cast<uint8_t>(0x06));
+
+	SET_TX_DESC_DATA_BW_8812(usb_frame, 0); 
+
+  //_logger->info("Calculate chksum");
+	
+	rtl8812a_cal_txdesc_chksum(usb_frame);
+  for (size_t i = 0; i < usb_frame_length; ++i) {
+        // Print each byte as a two-digit hexadecimal number
+        std::cout << "0x" << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(usb_frame[i]);
+        
+        // Print a space between bytes, but not after the last byte
+        if (i < length - 1) {
+            std::cout << " ";
+        }
+    }
+    std::cout << std::dec << std::endl;  // Reset to decimal formatting
+	// ----- end of fill tx desc ----- 
+  uint8_t * addr=usb_frame+TXDESC_SIZE;
+  memcpy(addr,packet,real_packet_length);
+
+  int actual_length = 0;
+  
+  int rc = libusb_bulk_transfer(_dev_handle, 0x04, usb_frame, usb_frame_length, &actual_length, USB_TIMEOUT);
+  if (rc == LIBUSB_SUCCESS && actual_length == usb_frame_length) {
+    _logger->info("Packet sent successfully, length: {}", length);
+     return true;
+  } else {
+    _logger->error("Failed to send packet, error code: {}, actual length: {}", rc, actual_length);
+    return false;
+  }
+}
+
 
 void RtlUsbAdapter::phy_set_bb_reg(uint16_t regAddr, uint32_t bitMask,
                                    uint32_t data) {

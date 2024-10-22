@@ -10,6 +10,18 @@ Rtl8812aDevice::Rtl8812aDevice(RtlUsbAdapter device, Logger_t logger)
       _halModule{device, _eepromManager, _radioManagement, logger},
       _logger{logger} {}
 
+void Rtl8812aDevice::InitWrite(SelectedChannel channel){
+	StartWithMonitorMode(channel);
+	SetMonitorChannel(channel);
+	_logger->info("In Monitor Mode");
+	
+
+}
+
+bool Rtl8812aDevice::send_packet(const uint8_t* packet, size_t length) {
+  return _device.send_packet(packet,length);
+}
+
 void Rtl8812aDevice::Init(Action_ParsedRadioPacket packetProcessor,
                           SelectedChannel channel) {
   _packetProcessor = packetProcessor;

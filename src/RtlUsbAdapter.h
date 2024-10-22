@@ -3,7 +3,7 @@
 
 #include <iostream>
 
-#include <libusb.h>
+#include <libusb-1.0/libusb.h>
 
 #include "drv_types.h"
 #include "hal_com_reg.h"
@@ -44,7 +44,7 @@ public:
   uint8_t OutEpNumber;
   uint8_t rxagg_usb_size;
   uint8_t rxagg_usb_timeout;
-
+  bool send_packet(const uint8_t* packet, size_t length);
   void infinite_read();
   uint8_t efuse_OneByteRead(uint16_t addr, uint8_t *data);
   void phy_set_bb_reg(uint16_t regAddr, uint32_t bitMask, uint32_t data);
