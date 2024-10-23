@@ -135,7 +135,7 @@ bool Rtl8812aDevice::send_packet(const uint8_t* packet, size_t length) {
 
   SET_TX_DESC_BMC_8812(usb_frame, 1);
 
-	SET_TX_DESC_RATE_ID_8812(usb_frame, static_cast<uint8_t>(mcs_index));
+	SET_TX_DESC_RATE_ID_8812(usb_frame, static_cast<uint8_t>(mcs_index)); // 原来设置的是7，得考虑下怎么转换
   SET_TX_DESC_HWSEQ_EN_8812(usb_frame, static_cast<uint8_t>(0)); /* Hw do not set sequence number */
 	SET_TX_DESC_SEQ_8812(usb_frame, 0); /* Copy inject sequence number to TxDesc */
 
@@ -152,7 +152,7 @@ else{
 
 	SET_TX_DESC_DISABLE_FB_8812(usb_frame, static_cast<uint8_t>(1)); // svpcom: ?
 	SET_TX_DESC_USE_RATE_8812(usb_frame, static_cast<uint8_t>(1));
-	SET_TX_DESC_TX_RATE_8812(usb_frame, static_cast<uint8_t>(mcs_index));
+	SET_TX_DESC_TX_RATE_8812(usb_frame, static_cast<uint8_t>(mcs_index)); // 原来设置的是6,也需要考虑下怎么转换
   
   if (ldpc)
 		SET_TX_DESC_DATA_LDPC_8812(usb_frame, 1);
