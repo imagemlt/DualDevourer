@@ -31,6 +31,7 @@ bool Rtl8812aDevice::send_packet(const uint8_t* packet, size_t length) {
   bool short_gi;
   uint8_t bandwidth;
   uint8_t mcs_index;
+  uint8_t rate_id;
   bool vht_mode;
   uint8_t vht_nss;
 
@@ -131,11 +132,13 @@ bool Rtl8812aDevice::send_packet(const uint8_t* packet, size_t length) {
 	ptxdesc->txdw1 |= cpu_to_le32((0x12 << QSEL_SHT) & 0x00001f00);
 
 	ptxdesc->txdw1 |= cpu_to_le32((0x01 << 16) & 0x000f0000); // b mode 
-        
+  
+  // todo: MCS怎样转换为rate_id
+  rate_id=0x07;
 
   SET_TX_DESC_BMC_8812(usb_frame, 1);
 
-	SET_TX_DESC_RATE_ID_8812(usb_frame, static_cast<uint8_t>(mcs_index)); // 原来设置的是7，得考虑下怎么转换
+	SET_TX_DESC_RATE_ID_8812(usb_frame, static_cast<uint8_t>(rate_id)); // 原来设置的是7，得考虑下怎么转换
   SET_TX_DESC_HWSEQ_EN_8812(usb_frame, static_cast<uint8_t>(0)); /* Hw do not set sequence number */
 	SET_TX_DESC_SEQ_8812(usb_frame, 0); /* Copy inject sequence number to TxDesc */
 
@@ -152,6 +155,8 @@ else{
 
 	SET_TX_DESC_DISABLE_FB_8812(usb_frame, static_cast<uint8_t>(1)); // svpcom: ?
 	SET_TX_DESC_USE_RATE_8812(usb_frame, static_cast<uint8_t>(1));
+  
+  //MRateToHwRate(rate_id);
 	SET_TX_DESC_TX_RATE_8812(usb_frame, static_cast<uint8_t>(mcs_index)); // 原来设置的是6,也需要考虑下怎么转换
   
   if (ldpc)
