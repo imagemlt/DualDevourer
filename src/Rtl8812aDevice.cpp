@@ -133,7 +133,7 @@ bool Rtl8812aDevice::send_packet(const uint8_t* packet, size_t length) {
 	ptxdesc->txdw1 |= cpu_to_le32((0x01 << 16) & 0x000f0000); // b mode 
         
 
-  SET_TX_DESC_BMC_8812(ptxdesc, 1);
+  SET_TX_DESC_BMC_8812(usb_frame, 1);
 
 	SET_TX_DESC_RATE_ID_8812(usb_frame, static_cast<uint8_t>(mcs_index));
   SET_TX_DESC_HWSEQ_EN_8812(usb_frame, static_cast<uint8_t>(0)); /* Hw do not set sequence number */
@@ -155,9 +155,9 @@ else{
 	SET_TX_DESC_TX_RATE_8812(usb_frame, static_cast<uint8_t>(mcs_index));
   
   if (ldpc)
-		SET_TX_DESC_DATA_LDPC_8812(ptxdesc, 1);
+		SET_TX_DESC_DATA_LDPC_8812(usb_frame, 1);
 	if (stbc)	
-		SET_TX_DESC_DATA_STBC_8812(ptxdesc, 1);
+		SET_TX_DESC_DATA_STBC_8812(usb_frame, 1);
 
   uint8_t BWSettingOfDesc;
 	if(_channel.ChannelWidth== CHANNEL_WIDTH_80)
