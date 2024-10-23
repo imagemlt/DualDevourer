@@ -5,6 +5,6 @@ WiFiDriver
 Makefile
 CMakeCache.txt
 CMakeFiles
+.cmake
 .swp
 .swo
-.cmake
