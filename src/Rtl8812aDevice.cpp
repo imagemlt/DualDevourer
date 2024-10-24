@@ -133,7 +133,8 @@ bool Rtl8812aDevice::send_packet(const uint8_t* packet, size_t length) {
 
 	ptxdesc->txdw1 |= cpu_to_le32((0x01 << 16) & 0x000f0000); // b mode 
   
-  // todo: MCS怎样转换为rate_id
+  // todo: MCS怎样转换为rate_id,使用的转换方式：PHY_GetRateIndexOfTxPowerByRate，HT模式应该是12
+
   rate_id=0x07;
 
   SET_TX_DESC_BMC_8812(usb_frame, 1);
