@@ -21,7 +21,7 @@ void Rtl8812aDevice::InitWrite(SelectedChannel channel){
 bool Rtl8812aDevice::send_packet(const uint8_t* packet, size_t length) {
     struct tx_desc *ptxdesc;
   uint8_t* usb_frame;
-  struct ieee80211_radiotap_header *rtap_hdr;
+  //struct ieee80211_radiotap_header *rtap_hdr;
   int real_packet_length,usb_frame_length,radiotap_length;
 
   radiotap_length = int(packet[2]);
@@ -115,7 +115,7 @@ bool Rtl8812aDevice::send_packet(const uint8_t* packet, size_t length) {
   
   usb_frame = new uint8_t[usb_frame_length]();
 
-  rtap_hdr = (struct ieee80211_radiotap_header*)packet;
+  //rtap_hdr = (struct ieee80211_radiotap_header*)packet;
 
 
   ptxdesc = (struct tx_desc *)usb_frame;

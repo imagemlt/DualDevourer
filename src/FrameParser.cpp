@@ -211,6 +211,25 @@ int rtw_action_frame_parse(const u8 *frame, u32 frame_len, u8 *category, u8 *act
 }
 
 void radiotap_to_txdesc(uint8_t *packet,uint8_t *usb_frame){
+  int ret = 0;
+	int rtap_len;
+	int qos_len = 0;
+	int dot11_hdr_len = 24;
+	int snap_len = 6;
+	unsigned char *pdata;
+	u16 frame_ctl;
+	unsigned char src_mac_addr[6];
+	unsigned char dst_mac_addr[6];
+	struct radiotap::ieee80211_radiotap_header *dot11_hdr;
+  struct radiotap::ieee80211_radiotap_iterator iterator;
+
+  u8 fixed_rate = MGN_1M, sgi = 0, bwidth = 0, ldpc = 0, stbc = 0;
+	u16 txflags = 0;
+
+  u8 *buf=packet;
+  //u32 len=;
+
+  rtap_hdr = (struct radiotap::ieee80211_radiotap_header *)buf;
   
   //未完待续
 
