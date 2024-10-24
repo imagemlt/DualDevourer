@@ -210,7 +210,7 @@ int rtw_action_frame_parse(const u8 *frame, u32 frame_len, u8 *category, u8 *act
 	
 }
 
-void radiotap_to_txdesc(uint8_t *packet,uint8_t *usb_frame){
+void radiotap_to_txdesc(uint8_t *packet,uint8_t *usb_frame){/*
   int ret = 0;
 	int rtap_len;
 	int qos_len = 0;
@@ -224,13 +224,142 @@ void radiotap_to_txdesc(uint8_t *packet,uint8_t *usb_frame){
   struct radiotap::ieee80211_radiotap_iterator iterator;
 
   u8 fixed_rate = MGN_1M, sgi = 0, bwidth = 0, ldpc = 0, stbc = 0;
+  bool vht = false;
 	u16 txflags = 0;
 
   u8 *buf=packet;
-  //u32 len=;
+  u32 len=sizeof(packet);
+
+  rtap_len = radiotap::ieee80211_get_radiotap_len(buf);
+  u8 category,action;
 
   rtap_hdr = (struct radiotap::ieee80211_radiotap_header *)buf;
+
+  ret = radiotap::rtw_ieee80211_radiotap_iterator_init(&iterator, rtap_hdr, len, NULL);
+	while (!ret) {
+    ret = radiotap::rtw_ieee80211_radiotap_iterator_next(&iterator);
+    if (ret)
+			continue;
+    switch (iterator.this_arg_index) {
+
+		case IEEE80211_RADIOTAP_RATE:		//
+			fixed_rate = *iterator.this_arg;
+			break;
+
+		case IEEE80211_RADIOTAP_TX_FLAGS:
+			txflags = get_unaligned_le16(iterator.this_arg);
+			break;
+
+		case IEEE80211_RADIOTAP_MCS: {		// u8,u8,u8 
+			u8 mcs_have = iterator.this_arg[0];
+			if (mcs_have & IEEE80211_RADIOTAP_MCS_HAVE_MCS) {
+				fixed_rate = iterator.this_arg[2] & 0x7f;
+				if(fixed_rate > 31)
+					fixed_rate = 0;
+				fixed_rate += MGN_MCS0;
+			}
+			if ((mcs_have & 4) && 
+			    (iterator.this_arg[1] & 4))
+				sgi = 1;
+			if ((mcs_have & 1) && 
+			    (iterator.this_arg[1] & 1))
+				bwidth = 1;
+			if ((mcs_have & 0x10) && 
+			    (iterator.this_arg[1] & 0x10))
+				ldpc = 1;
+			if ((mcs_have & 0x20))
+				stbc = (iterator.this_arg[1] >> 5) & 3;	
+		}
+		break;
+
+		case IEEE80211_RADIOTAP_VHT: {
+      vht = true;
+		// u16 known, u8 flags, u8 bandwidth, u8 mcs_nss[4], u8 coding, u8 group_id, u16 partial_aid 
+			u8 known = iterator.this_arg[0];
+			u8 flags = iterator.this_arg[2];
+			unsigned int mcs, nss;
+			if((known & 4) && (flags & 4))
+				sgi = 1;
+			if((known & 1) && (flags & 1))
+				stbc = 1;
+			if(known & 0x40) {
+				bwidth = iterator.this_arg[3] & 0x1f;
+				if(bwidth>=1 && bwidth<=3)
+					bwidth = 1; // 40 MHz
+				else if(bwidth>=4 && bwidth<=10)
+					bwidth = 2;	// 80 MHz
+				else
+					bwidth = 0; // 20 MHz
+			}
+			if(iterator.this_arg[8] & 1)
+				ldpc = 1;
+			mcs = (iterator.this_arg[4]>>4) & 0x0f;
+			nss = iterator.this_arg[4] & 0x0f;
+			if(nss > 0) {
+				if(nss > 4) nss = 4;
+				if(mcs > 9) mcs = 9;
+				fixed_rate = MGN_VHT1SS_MCS0 + ((nss-1)*10 + mcs);
+			}
+		}
+		break;
+
+		default:
+			break;
+		}
+  }
+
+  buf = buf + rtap_len;
+  //pattrib更新
+
+  ptxdesc = (struct tx_desc *)usb_frame;
+
+  ptxdesc->txdw0 |= cpu_to_le32((unsigned int)(len - rtap_len) & 0x0000ffff);
+	ptxdesc->txdw0 |= cpu_to_le32(((TXDESC_SIZE + OFFSET_SZ) << OFFSET_SHT) & 0x00ff0000); // default = 32 bytes for TX Desc 
+	ptxdesc->txdw0 |= cpu_to_le32(OWN | FSG | LSG);
+
+	ptxdesc->txdw0 |= cpu_to_le32(BIT(24));
+
+	// offset 4	 
+	ptxdesc->txdw1 |= cpu_to_le32(0x00);// MAC_ID 
+
+	ptxdesc->txdw1 |= cpu_to_le32((0x12 << QSEL_SHT) & 0x00001f00);
+
+	ptxdesc->txdw1 |= cpu_to_le32((0x01 << 16) & 0x000f0000); // b mode 
   
+  // todo: MCS怎样转换为rate_id,使用的转换方式：PHY_GetRateIndexOfTxPowerByRate，HT模式应该是12
+
+  rate_id=0x07;
+
+  SET_TX_DESC_BMC_8812(usb_frame, 1);
+
+	SET_TX_DESC_RATE_ID_8812(usb_frame, static_cast<uint8_t>(rate_id)); // 原来设置的是7，得考虑下怎么转换
+  SET_TX_DESC_HWSEQ_EN_8812(usb_frame, static_cast<uint8_t>(0)); // Hw do not set sequence number 
+	SET_TX_DESC_SEQ_8812(usb_frame, 0); // Copy inject sequence number to TxDesc 
+
+	SET_TX_DESC_RETRY_LIMIT_ENABLE_8812(usb_frame, static_cast<uint8_t>(1));
+
+	SET_TX_DESC_DATA_RETRY_LIMIT_8812(usb_frame, static_cast<uint8_t>(0));
+
+  SET_TX_DESC_DATA_SHORT_8812(usb_frame, static_cast<uint8_t>(sgi));
+
+
+	SET_TX_DESC_DISABLE_FB_8812(usb_frame, static_cast<uint8_t>(1)); // svpcom: ?
+	SET_TX_DESC_USE_RATE_8812(usb_frame, static_cast<uint8_t>(1));
+  
+  //MRateToHwRate(rate_id);
+	SET_TX_DESC_TX_RATE_8812(usb_frame, static_cast<uint8_t>(MRateToHwRate(pattrib->rate))); // 原来设置的是6,也需要考虑下怎么转换
+  
+  if (ldpc)
+		SET_TX_DESC_DATA_LDPC_8812(usb_frame, 1);
+	if (stbc)	
+		SET_TX_DESC_DATA_STBC_8812(usb_frame, 1);
+
+  SET_TX_DESC_DATA_BW_8812(usb_frame, bwidth); 
+
+  rtl8812a_cal_txdesc_chksum(usb_frame);
+  
+
+  */
   //未完待续
 
 }
