@@ -453,7 +453,7 @@ enum MGN_RATE {
         }
     }
 
-int main(){
+int test_main(){
 	int ret = 0;
 	int rtap_len;
 	int qos_len = 0;
