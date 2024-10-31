@@ -49,6 +49,8 @@ add_executable(WiFiDriver
     src/WiFiDriver.cpp
     src/WiFiDriver.h
     src/registry_priv.h
+    src/ieee80211_radiotap.h
+    src/Radiotap.c
     )
 
 target_link_libraries(WiFiDriver PRIVATE

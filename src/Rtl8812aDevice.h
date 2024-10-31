@@ -13,6 +13,10 @@
 #include "RadioManagementModule.h"
 #include "FrameParser.h"
 
+extern "C"
+{
+#include "ieee80211_radiotap.h"
+}
 
 
 
