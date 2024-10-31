@@ -25,6 +25,7 @@ class Rtl8812aDevice {
   RtlUsbAdapter _device;
   HalModule _halModule;
   Logger_t _logger;
+  uint8_t debug;
   Action_ParsedRadioPacket _packetProcessor = nullptr;
 
 public:

@@ -324,7 +324,7 @@ bool RtlUsbAdapter::send_packet(uint8_t* packet, size_t length) {
 	
   int actual_length = 0;
   
-  int rc = libusb_bulk_transfer(_dev_handle, 0x04, packet, length, &actual_length, USB_TIMEOUT);
+  int rc = libusb_bulk_transfer(_dev_handle, 0x02, packet, length, &actual_length, USB_TIMEOUT);
   if (rc == LIBUSB_SUCCESS && actual_length == length) {
     _logger->info("Packet sent successfully, length: {}", length);
      return true;

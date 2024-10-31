@@ -15,9 +15,96 @@
  */
 
 #include "ieee80211_radiotap.h"
+#include<stdio.h>
 
-namespace radiotap{
-
+enum MGN_RATE {
+  MGN_1M = 0x02,
+  MGN_2M = 0x04,
+  MGN_5_5M = 0x0B,
+  MGN_6M = 0x0C,
+  MGN_9M = 0x12,
+  MGN_11M = 0x16,
+  MGN_12M = 0x18,
+  MGN_18M = 0x24,
+  MGN_24M = 0x30,
+  MGN_36M = 0x48,
+  MGN_48M = 0x60,
+  MGN_54M = 0x6C,
+  MGN_MCS32 = 0x7F,
+  MGN_MCS0,
+  MGN_MCS1,
+  MGN_MCS2,
+  MGN_MCS3,
+  MGN_MCS4,
+  MGN_MCS5,
+  MGN_MCS6,
+  MGN_MCS7,
+  MGN_MCS8,
+  MGN_MCS9,
+  MGN_MCS10,
+  MGN_MCS11,
+  MGN_MCS12,
+  MGN_MCS13,
+  MGN_MCS14,
+  MGN_MCS15,
+  MGN_MCS16,
+  MGN_MCS17,
+  MGN_MCS18,
+  MGN_MCS19,
+  MGN_MCS20,
+  MGN_MCS21,
+  MGN_MCS22,
+  MGN_MCS23,
+  MGN_MCS24,
+  MGN_MCS25,
+  MGN_MCS26,
+  MGN_MCS27,
+  MGN_MCS28,
+  MGN_MCS29,
+  MGN_MCS30,
+  MGN_MCS31,
+  MGN_VHT1SS_MCS0,
+  MGN_VHT1SS_MCS1,
+  MGN_VHT1SS_MCS2,
+  MGN_VHT1SS_MCS3,
+  MGN_VHT1SS_MCS4,
+  MGN_VHT1SS_MCS5,
+  MGN_VHT1SS_MCS6,
+  MGN_VHT1SS_MCS7,
+  MGN_VHT1SS_MCS8,
+  MGN_VHT1SS_MCS9,
+  MGN_VHT2SS_MCS0,
+  MGN_VHT2SS_MCS1,
+  MGN_VHT2SS_MCS2,
+  MGN_VHT2SS_MCS3,
+  MGN_VHT2SS_MCS4,
+  MGN_VHT2SS_MCS5,
+  MGN_VHT2SS_MCS6,
+  MGN_VHT2SS_MCS7,
+  MGN_VHT2SS_MCS8,
+  MGN_VHT2SS_MCS9,
+  MGN_VHT3SS_MCS0,
+  MGN_VHT3SS_MCS1,
+  MGN_VHT3SS_MCS2,
+  MGN_VHT3SS_MCS3,
+  MGN_VHT3SS_MCS4,
+  MGN_VHT3SS_MCS5,
+  MGN_VHT3SS_MCS6,
+  MGN_VHT3SS_MCS7,
+  MGN_VHT3SS_MCS8,
+  MGN_VHT3SS_MCS9,
+  MGN_VHT4SS_MCS0,
+  MGN_VHT4SS_MCS1,
+  MGN_VHT4SS_MCS2,
+  MGN_VHT4SS_MCS3,
+  MGN_VHT4SS_MCS4,
+  MGN_VHT4SS_MCS5,
+  MGN_VHT4SS_MCS6,
+  MGN_VHT4SS_MCS7,
+  MGN_VHT4SS_MCS8,
+  MGN_VHT4SS_MCS9,
+  MGN_UNKNOWN
+};
     /* function prototypes and related defs are in include/net/cfg80211.h */
 
     static const struct radiotap_align_size rtap_namespace_sizes[] = {
@@ -49,7 +136,7 @@ namespace radiotap{
     };
 
     static const struct ieee80211_radiotap_namespace radiotap_ns = {
-        .n_bits = ARRAY_SIZE(rtap_namespace_sizes),
+	    .n_bits = ARRAY_SIZE(rtap_namespace_sizes),
         .align_size = rtap_namespace_sizes,
     };
 
@@ -365,5 +452,106 @@ namespace radiotap{
                 return 0;
         }
     }
+
+int main(){
+	int ret = 0;
+	int rtap_len;
+	int qos_len = 0;
+	int dot11_hdr_len = 24;
+	int snap_len = 6;
+	unsigned char *pdata;
+	u16 frame_ctl;
+	unsigned char src_mac_addr[6];
+	unsigned char dst_mac_addr[6];
+	u8 fixed_rate = MGN_1M, sgi = 0, bwidth = 0, ldpc = 0, stbc = 0;
+	u16 txflags = 0;
+
+
+	uint8_t pkt[]= {0x00 ,0x00 ,0x0d, 0x00 ,0x00, 0x80, 0x08, 0x00, 0x08, 0x00, 0x37, 0x00, 0x01,
+	};
+    struct ieee80211_radiotap_header *rtap_hdr;
+	rtap_hdr = (struct ieee80211_radiotap_header *)pkt;
+	struct ieee80211_radiotap_iterator iterator;
+	ret = ieee80211_radiotap_iterator_init(&iterator, pkt, 0x0d, NULL);
+        while (!ret) {
+		ret = ieee80211_radiotap_iterator_next(&iterator);
+
+		if (ret)
+			continue;
+
+		/* see if this argument is something we can use */
+		switch (iterator.this_arg_index) {
+
+		case IEEE80211_RADIOTAP_RATE:		/* u8 */
+			fixed_rate = *iterator.this_arg;
+			break;
+
+		case IEEE80211_RADIOTAP_TX_FLAGS:
+			txflags = get_unaligned_le16(iterator.this_arg);
+			break;
+
+		case IEEE80211_RADIOTAP_MCS: {		/* u8,u8,u8 */
+			u8 mcs_have = iterator.this_arg[0];
+			printf("MCS value:%d %d %d\n",iterator.this_arg[0],iterator.this_arg[1],iterator.this_arg[2]);
+			printf("mcs parse:%d\n",mcs_have);
+			if (mcs_have & IEEE80211_RADIOTAP_MCS_HAVE_MCS) {
+				fixed_rate = iterator.this_arg[2] & 0x7f;
+				if(fixed_rate > 31)
+					fixed_rate = 0;
+				fixed_rate += MGN_MCS0;
+			}
+			printf("mcs_have & 4 = %d,%d \n",(mcs_have & 4),(iterator.this_arg[1] & 1));
+			if ((mcs_have & 4) && 
+			    (iterator.this_arg[1] & 4))
+				sgi = 1;
+			if ((mcs_have & 1) && 
+			    (iterator.this_arg[1] & 1))
+				bwidth = 1;
+			if ((mcs_have & 0x10) && 
+			    (iterator.this_arg[1] & 0x10))
+				ldpc = 1;
+			if ((mcs_have & 0x20))
+				stbc = (iterator.this_arg[1] >> 5) & 3;	
+		}
+		break;
+
+		case IEEE80211_RADIOTAP_VHT: {
+		/* u16 known, u8 flags, u8 bandwidth, u8 mcs_nss[4], u8 coding, u8 group_id, u16 partial_aid */
+			u8 known = iterator.this_arg[0];
+			u8 flags = iterator.this_arg[2];
+			unsigned int mcs, nss;
+			if((known & 4) && (flags & 4))
+				sgi = 1;
+			if((known & 1) && (flags & 1))
+				stbc = 1;
+			if(known & 0x40) {
+				bwidth = iterator.this_arg[3] & 0x1f;
+				if(bwidth>=1 && bwidth<=3)
+					bwidth = 1; // 40 MHz
+				else if(bwidth>=4 && bwidth<=10)
+					bwidth = 2;	// 80 MHz
+				else
+					bwidth = 0; // 20 MHz
+			}
+			if(iterator.this_arg[8] & 1)
+				ldpc = 1;
+			mcs = (iterator.this_arg[4]>>4) & 0x0f;
+			nss = iterator.this_arg[4] & 0x0f;
+			if(nss > 0) {
+				if(nss > 4) nss = 4;
+				if(mcs > 9) mcs = 9;
+				fixed_rate = MGN_VHT1SS_MCS0 + ((nss-1)*10 + mcs);
+			}
+		}
+		break;
+
+		default:
+			break;
+		}
+	}
+
+	printf("fixed rate:%d\n",fixed_rate);
+	printf("sgi =%d,bandwdith=%d,ldpc=%d,stbc=%d\n",sgi,bwidth,ldpc,stbc);
+return 1;
 
 }

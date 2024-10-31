@@ -145,7 +145,6 @@ typedef u32 __le32;
 /* Base version of the radiotap packet header data */
 #define PKTHDR_RADIOTAP_VERSION         0
 
-namespace radiotap{
 
     static inline u16 __get_unaligned_memmove16(const void *p)
     {
@@ -441,4 +440,3 @@ namespace radiotap{
 
     int
     ieee80211_radiotap_iterator_next(struct ieee80211_radiotap_iterator *iterator);
-}

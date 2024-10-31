@@ -120,51 +120,63 @@ bool Rtl8812aDevice::send_packet(const uint8_t* packet, size_t length) {
 
   ptxdesc = (struct tx_desc *)usb_frame;
 
-  ptxdesc->txdw0 |= cpu_to_le32((unsigned int)(real_packet_length) & 0x0000ffff);
+  /*ptxdesc->txdw0 |= cpu_to_le32((unsigned int)(real_packet_length) & 0x0000ffff);
 	ptxdesc->txdw0 |= cpu_to_le32(((TXDESC_SIZE + OFFSET_SZ) << OFFSET_SHT) & 0x00ff0000); // default = 32 bytes for TX Desc 
 	ptxdesc->txdw0 |= cpu_to_le32(OWN | FSG | LSG);
 
 	ptxdesc->txdw0 |= cpu_to_le32(BIT(24));
 
 	// offset 4	 
-	ptxdesc->txdw1 |= cpu_to_le32(0x00);// MAC_ID 
+	ptxdesc->txdw1 |= cpu_to_le32(0x01);// MAC_ID 
 
 	ptxdesc->txdw1 |= cpu_to_le32((0x12 << QSEL_SHT) & 0x00001f00);
 
 	ptxdesc->txdw1 |= cpu_to_le32((0x01 << 16) & 0x000f0000); // b mode 
   
   // todo: MCS怎样转换为rate_id,使用的转换方式：PHY_GetRateIndexOfTxPowerByRate，HT模式应该是12
+*/
+  SET_TX_DESC_FIRST_SEG_8812(usb_frame, 1);
+  SET_TX_DESC_LAST_SEG_8812(usb_frame, 1);
+  SET_TX_DESC_OWN_8812(usb_frame,1);
 
-  rate_id=0x07;
+  SET_TX_DESC_PKT_SIZE_8812(usb_frame, static_cast<uint8_t>(real_packet_length));
+  
+  SET_TX_DESC_OFFSET_8812(usb_frame,static_cast<uint8_t>(TXDESC_SIZE + OFFSET_SZ));
+
+  SET_TX_DESC_MACID_8812(usb_frame,static_cast<uint8_t>(0x01));
+  rate_id=9;
 
   SET_TX_DESC_BMC_8812(usb_frame, 1);
+	SET_TX_DESC_RATE_ID_8812(usb_frame, static_cast<uint8_t>(rate_id)); // 原来设置的是7，得考虑下
+									    //
 
-	SET_TX_DESC_RATE_ID_8812(usb_frame, static_cast<uint8_t>(rate_id)); // 原来设置的是7，得考虑下怎么转换
+	SET_TX_DESC_QUEUE_SEL_8812(usb_frame,0x12);
   SET_TX_DESC_HWSEQ_EN_8812(usb_frame, static_cast<uint8_t>(0)); /* Hw do not set sequence number */
-	SET_TX_DESC_SEQ_8812(usb_frame, 0); /* Copy inject sequence number to TxDesc */
-
+	SET_TX_DESC_SEQ_8812(usb_frame, debug); /* Copy inject sequence number to TxDesc */
+        debug ++;
 	SET_TX_DESC_RETRY_LIMIT_ENABLE_8812(usb_frame, static_cast<uint8_t>(1));
 
 	SET_TX_DESC_DATA_RETRY_LIMIT_8812(usb_frame, static_cast<uint8_t>(0));
   if(short_gi){
-    SET_TX_DESC_DATA_SHORT_8812(usb_frame, static_cast<uint8_t>(1));
+    _logger->info("short gi enabled,set sgi");
+    SET_TX_DESC_DATA_SHORT_8812(usb_frame, 1);
   }
-else{
-  SET_TX_DESC_DATA_SHORT_8812(usb_frame, static_cast<uint8_t>(0));
-}
 
 
-	SET_TX_DESC_DISABLE_FB_8812(usb_frame, static_cast<uint8_t>(1)); // svpcom: ?
-	SET_TX_DESC_USE_RATE_8812(usb_frame, static_cast<uint8_t>(1));
-  
+
+	SET_TX_DESC_DISABLE_FB_8812(usb_frame, 1); 
+
+	SET_TX_DESC_USE_RATE_8812(usb_frame, 1);
+        
   //MRateToHwRate(rate_id);
-	SET_TX_DESC_TX_RATE_8812(usb_frame, static_cast<uint8_t>(mcs_index)); // 原来设置的是6,也需要考虑下怎么转换
+	SET_TX_DESC_TX_RATE_8812(usb_frame, static_cast<uint8_t>(13)); // 原来设置的是6,也需要考虑下怎么转换
   
-  if (ldpc)
+        if (ldpc){
 		SET_TX_DESC_DATA_LDPC_8812(usb_frame, 1);
-	if (stbc)	
-		SET_TX_DESC_DATA_STBC_8812(usb_frame, 1);
-
+	}
+	
+	SET_TX_DESC_DATA_STBC_8812(usb_frame, stbc & 3);
+	
   uint8_t BWSettingOfDesc;
 	if(_channel.ChannelWidth== CHANNEL_WIDTH_80)
 	{
@@ -186,7 +198,7 @@ else{
 		BWSettingOfDesc = 0;
 
 	
-  SET_TX_DESC_DATA_BW_8812(usb_frame, BWSettingOfDesc); 
+  SET_TX_DESC_DATA_BW_8812(usb_frame, 0); 
 
   rtl8812a_cal_txdesc_chksum(usb_frame);
   _logger->info("tx desc formed");
@@ -195,8 +207,8 @@ else{
         std::cout << "0x" << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(usb_frame[i]);
         
         // Print a space between bytes, but not after the last byte
-        if (i < length - 1) {
-            std::cout << " ";
+        if (i < usb_frame_length - 1) {
+            std::cout << ",";
         }
     }
     std::cout << std::dec << std::endl;  // Reset to decimal formatting
@@ -209,44 +221,45 @@ else{
         std::cout << "0x" << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(usb_frame[i]);
         
         // Print a space between bytes, but not after the last byte
-        if (i < length - 1) {
-            std::cout << " ";
+        if (i < usb_frame_length - 1) {
+            std::cout << ",";
         }
     }
     std::cout << std::dec << std::endl;  // Reset to decimal formatting
-
-  return _device.send_packet(usb_frame,usb_frame_length);
+					
+    return _device.send_packet(usb_frame,usb_frame_length);
 }
 
 void Rtl8812aDevice::Init(Action_ParsedRadioPacket packetProcessor,
                           SelectedChannel channel) {
   _packetProcessor = packetProcessor;
 
+  debug = 0;
   StartWithMonitorMode(channel);
   SetMonitorChannel(channel);
 
   // 設置無線模式爲支持任何協議
-
+/*
   _device.rtw_write8(REG_RESP_SIFS_CCK,static_cast<uint8_t>(0x08));
   _device.rtw_write8(REG_RESP_SIFS_CCK + 1, static_cast<uint8_t>(0x08));
-  _device.rtw_write8(REG_RESP_SIFS_OFDM, static_cast<uint8_t>(0x0a)); /* SIFS_T2T_OFDM (0x0a) */
-	_device.rtw_write8(REG_RESP_SIFS_OFDM + 1, static_cast<uint8_t>(0x0a)); /* SIFS_R2T_OFDM(0x0a) */
-
-  u8	R2T_SIFS = 0x0a, SIFS_Timer = 0x0e; //先不支持vht試試看看效果
+  _device.rtw_write8(REG_RESP_SIFS_OFDM, static_cast<uint8_t>(0x0a)); /* SIFS_T2T_OFDM (0x0a) 
+	_device.rtw_write8(REG_RESP_SIFS_OFDM + 1, static_cast<uint8_t>(0x0a)); /* SIFS_R2T_OFDM(0x0a) 
+  u8	R2T_SIFS = 0xa, SIFS_Timer = 0xe; //先不支持vht試試看看效果
 
   _device.rtw_write8(REG_SIFS_CTX + 1, SIFS_Timer);
-		/* SIFS for OFDM consecutive tx like CTS data! */
+		// SIFS for OFDM consecutive tx like CTS data! 
 	_device.rtw_write8(REG_SIFS_TRX + 1, SIFS_Timer);
 
 	_device.rtw_write8(REG_SPEC_SIFS + 1, SIFS_Timer);
 	_device.rtw_write8(REG_MAC_SPEC_SIFS + 1, SIFS_Timer);
 
-		/* 20100719 Joseph: Revise SIFS setting due to Hardware register definition change. */
+		/* 20100719 Joseph: Revise SIFS setting due to Hardware register definition change. 
 	_device.rtw_write8(REG_RESP_SIFS_OFDM + 1, SIFS_Timer);
 	_device.rtw_write8(REG_RESP_SIFS_OFDM, SIFS_Timer);
 
   _device.rtw_write8(REG_RESP_SIFS_OFDM + 1, R2T_SIFS);
-
+*/
+  _logger->info("設置爲支持多種調製模式");
   _logger->info("Listening air...");
 
   for (;;)

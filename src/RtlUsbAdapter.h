@@ -60,7 +60,7 @@ public:
       return data;
     }
 
-    _logger->error("rtw_read({:x}), sizeof(T) = {}", reg_num, sizeof(T));
+    _logger->error("rtw_read({:04x}), sizeof(T) = {}", reg_num, sizeof(T));
     throw std::ios_base::failure("rtw_read");
     return 0;
   }
