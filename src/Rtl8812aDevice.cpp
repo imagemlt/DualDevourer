@@ -2,6 +2,7 @@
 #include "EepromManager.h"
 #include "RadioManagementModule.h"
 
+
 Rtl8812aDevice::Rtl8812aDevice(RtlUsbAdapter device, Logger_t logger)
     : _device{device},
       _eepromManager{std::make_shared<EepromManager>(device, logger)},
@@ -24,117 +25,117 @@ bool Rtl8812aDevice::send_packet(const uint8_t* packet, size_t length) {
   //struct ieee80211_radiotap_header *rtap_hdr;
   int real_packet_length,usb_frame_length,radiotap_length;
 
+  bool vht = false;
+  int ret=0;
+	int qos_len = 0;
+	int dot11_hdr_len = 24;
+	int snap_len = 6;
+	unsigned char *pdata;
+	u16 frame_ctl;
+	unsigned char src_mac_addr[6];
+	unsigned char dst_mac_addr[6];
+	u8 fixed_rate = MGN_1M, sgi = 0, bwidth = 0, ldpc = 0, stbc = 0;
+	u16 txflags = 0;
+  int rate_id = 0;
   radiotap_length = int(packet[2]);
   real_packet_length = length - radiotap_length;
-  uint8_t stbc;
-  bool ldpc;
-  bool short_gi;
-  uint8_t bandwidth;
-  uint8_t mcs_index;
-  uint8_t rate_id;
-  bool vht_mode;
-  uint8_t vht_nss;
+  
+  if(radiotap_length != 0x0d)vht=true;
 
   usb_frame_length = real_packet_length + TXDESC_SIZE;
 
   _logger->info("radiotap length is {},80211 length is {},usb_frame length should be {}",radiotap_length,real_packet_length,usb_frame_length);
 
-  if(packet[2] == 0x0d){
-    vht_mode = false;
-    
-    uint8_t flags = packet[MCS_FLAGS_OFF];
-    switch (flags & IEEE80211_RADIOTAP_MCS_BW_MASK) {
-        case IEEE80211_RADIOTAP_MCS_BW_20:
-            bandwidth = 20;
-            break;
-        case IEEE80211_RADIOTAP_MCS_BW_40:
-            bandwidth = 40;
-            break;
-        case IEEE80211_RADIOTAP_MCS_BW_20L:
-        case IEEE80211_RADIOTAP_MCS_BW_20U:
-            bandwidth = 20; // Assuming these are variations of 20 MHz
-            break;
-        default:
-            throw std::runtime_error("Unsupported bandwidth in flags");
-    }
+ 
 
-    // Parse Short GI
-    if (flags & IEEE80211_RADIOTAP_MCS_SGI) {
-        short_gi = true;
-    }
+  struct ieee80211_radiotap_header *rtap_hdr;
+	rtap_hdr = (struct ieee80211_radiotap_header *)packet;
+	struct ieee80211_radiotap_iterator iterator;
+	ret = ieee80211_radiotap_iterator_init(&iterator, rtap_hdr, radiotap_length , NULL);
+        while (!ret) {
+		ret = ieee80211_radiotap_iterator_next(&iterator);
 
-    // Parse STBC
-    stbc = (flags & IEEE80211_RADIOTAP_MCS_STBC_MASK) >> IEEE80211_RADIOTAP_MCS_STBC_SHIFT;
+		if (ret)
+			continue;
 
-    // Parse LDPC
-    if (flags & IEEE80211_RADIOTAP_MCS_FEC_LDPC) {
-        ldpc = true;
-    }
-    
-    mcs_index = packet[MCS_IDX_OFF];
+		/* see if this argument is something we can use */
+		switch (iterator.this_arg_index) {
 
-  }else{
-    vht_mode = true;
-    uint8_t flags = packet[VHT_FLAGS_OFF];
-    if (flags & IEEE80211_RADIOTAP_VHT_FLAG_SGI) {
-        short_gi = true;
-    }
-    if (flags & IEEE80211_RADIOTAP_VHT_FLAG_STBC) {
-        stbc = true;
-    }
+		case IEEE80211_RADIOTAP_RATE:		/* u8 */
+			fixed_rate = *iterator.this_arg;
+			break;
 
-    // 解析带宽
-    switch (packet[VHT_BW_OFF]) {
-        case IEEE80211_RADIOTAP_VHT_BW_20M:
-            bandwidth = 20;
-            break;
-        case IEEE80211_RADIOTAP_VHT_BW_40M:
-            bandwidth = 40;
-            break;
-        case IEEE80211_RADIOTAP_VHT_BW_80M:
-            bandwidth = 80;
-            break;
-        case IEEE80211_RADIOTAP_VHT_BW_160M:
-            bandwidth = 160;
-            break;
-        default:
-            throw std::runtime_error("Unsupported VHT bandwidth in header");
-    }
+		case IEEE80211_RADIOTAP_TX_FLAGS:
+			txflags = get_unaligned_le16(iterator.this_arg);
+			break;
 
-    // 解析LDPC
-    if (packet[VHT_CODING_OFF] & IEEE80211_RADIOTAP_VHT_CODING_LDPC_USER0) {
-        ldpc = true;
-    }
+		case IEEE80211_RADIOTAP_MCS: {		/* u8,u8,u8 */
+			u8 mcs_have = iterator.this_arg[0];
+			printf("MCS value:%d %d %d\n",iterator.this_arg[0],iterator.this_arg[1],iterator.this_arg[2]);
+			printf("mcs parse:%d\n",mcs_have);
+			if (mcs_have & IEEE80211_RADIOTAP_MCS_HAVE_MCS) {
+				fixed_rate = iterator.this_arg[2] & 0x7f;
+				if(fixed_rate > 31)
+					fixed_rate = 0;
+				fixed_rate += MGN_MCS0;
+			}
+			printf("mcs_have & 4 = %d,%d \n",(mcs_have & 4),(iterator.this_arg[1] & 1));
+			if ((mcs_have & 4) && 
+			    (iterator.this_arg[1] & 4))
+				sgi = 1;
+			if ((mcs_have & 1) && 
+			    (iterator.this_arg[1] & 1))
+				bwidth = 1;
+			if ((mcs_have & 0x10) && 
+			    (iterator.this_arg[1] & 0x10))
+				ldpc = 1;
+			if ((mcs_have & 0x20))
+				stbc = (iterator.this_arg[1] >> 5) & 3;	
+		}
+		break;
 
-    // 解析MCS索引和NSS
-    mcs_index = (packet[VHT_MCSNSS0_OFF] & IEEE80211_RADIOTAP_VHT_MCS_MASK) >> IEEE80211_RADIOTAP_VHT_MCS_SHIFT;
-    vht_nss = (packet[VHT_MCSNSS0_OFF] & IEEE80211_RADIOTAP_VHT_NSS_MASK) >> IEEE80211_RADIOTAP_VHT_NSS_SHIFT;
-  }
-  _logger->info("uint8_t stbc = {};bool ldpc = {};bool short_gi={};uint8_t bandwidth={};uint8_t mcs_index={};bool vht_mode={};uint8_t vht_nss={};",stbc,ldpc,short_gi,bandwidth,mcs_index,vht_mode,vht_nss);
-  
+		case IEEE80211_RADIOTAP_VHT: {
+		/* u16 known, u8 flags, u8 bandwidth, u8 mcs_nss[4], u8 coding, u8 group_id, u16 partial_aid */
+			u8 known = iterator.this_arg[0];
+			u8 flags = iterator.this_arg[2];
+			unsigned int mcs, nss;
+			if((known & 4) && (flags & 4))
+				sgi = 1;
+			if((known & 1) && (flags & 1))
+				stbc = 1;
+			if(known & 0x40) {
+				bwidth = iterator.this_arg[3] & 0x1f;
+				if(bwidth>=1 && bwidth<=3)
+					bwidth = 1; // 40 MHz
+				else if(bwidth>=4 && bwidth<=10)
+					bwidth = 2;	// 80 MHz
+				else
+					bwidth = 0; // 20 MHz
+			}
+			if(iterator.this_arg[8] & 1)
+				ldpc = 1;
+			mcs = (iterator.this_arg[4]>>4) & 0x0f;
+			nss = iterator.this_arg[4] & 0x0f;
+			if(nss > 0) {
+				if(nss > 4) nss = 4;
+				if(mcs > 9) mcs = 9;
+				fixed_rate = MGN_VHT1SS_MCS0 + ((nss-1)*10 + mcs);
+			}
+		}
+		break;
+
+		default:
+			break;
+		}
+	}
+
+	printf("fixed rate:%d\n",fixed_rate);
+	printf("sgi =%d,bandwdith=%d,ldpc=%d,stbc=%d\n",sgi,bwidth,ldpc,stbc);
   
   usb_frame = new uint8_t[usb_frame_length]();
 
-  //rtap_hdr = (struct ieee80211_radiotap_header*)packet;
-
-
   ptxdesc = (struct tx_desc *)usb_frame;
-
-  /*ptxdesc->txdw0 |= cpu_to_le32((unsigned int)(real_packet_length) & 0x0000ffff);
-	ptxdesc->txdw0 |= cpu_to_le32(((TXDESC_SIZE + OFFSET_SZ) << OFFSET_SHT) & 0x00ff0000); // default = 32 bytes for TX Desc 
-	ptxdesc->txdw0 |= cpu_to_le32(OWN | FSG | LSG);
-
-	ptxdesc->txdw0 |= cpu_to_le32(BIT(24));
-
-	// offset 4	 
-	ptxdesc->txdw1 |= cpu_to_le32(0x01);// MAC_ID 
-
-	ptxdesc->txdw1 |= cpu_to_le32((0x12 << QSEL_SHT) & 0x00001f00);
-
-	ptxdesc->txdw1 |= cpu_to_le32((0x01 << 16) & 0x000f0000); // b mode 
   
-  // todo: MCS怎样转换为rate_id,使用的转换方式：PHY_GetRateIndexOfTxPowerByRate，HT模式应该是12
-*/
   SET_TX_DESC_FIRST_SEG_8812(usb_frame, 1);
   SET_TX_DESC_LAST_SEG_8812(usb_frame, 1);
   SET_TX_DESC_OWN_8812(usb_frame,1);
@@ -144,7 +145,12 @@ bool Rtl8812aDevice::send_packet(const uint8_t* packet, size_t length) {
   SET_TX_DESC_OFFSET_8812(usb_frame,static_cast<uint8_t>(TXDESC_SIZE + OFFSET_SZ));
 
   SET_TX_DESC_MACID_8812(usb_frame,static_cast<uint8_t>(0x01));
-  rate_id=9;
+  
+  if(!vht){
+    rate_id=7;
+  }else{
+    rate_id=9;
+  }
 
   SET_TX_DESC_BMC_8812(usb_frame, 1);
 	SET_TX_DESC_RATE_ID_8812(usb_frame, static_cast<uint8_t>(rate_id)); // 原来设置的是7，得考虑下
@@ -157,7 +163,7 @@ bool Rtl8812aDevice::send_packet(const uint8_t* packet, size_t length) {
 	SET_TX_DESC_RETRY_LIMIT_ENABLE_8812(usb_frame, static_cast<uint8_t>(1));
 
 	SET_TX_DESC_DATA_RETRY_LIMIT_8812(usb_frame, static_cast<uint8_t>(0));
-  if(short_gi){
+  if(sgi){
     _logger->info("short gi enabled,set sgi");
     SET_TX_DESC_DATA_SHORT_8812(usb_frame, 1);
   }
@@ -168,11 +174,11 @@ bool Rtl8812aDevice::send_packet(const uint8_t* packet, size_t length) {
 
 	SET_TX_DESC_USE_RATE_8812(usb_frame, 1);
         
-  //MRateToHwRate(rate_id);
-	SET_TX_DESC_TX_RATE_8812(usb_frame, static_cast<uint8_t>(13)); // 原来设置的是6,也需要考虑下怎么转换
   
-        if (ldpc){
-		SET_TX_DESC_DATA_LDPC_8812(usb_frame, 1);
+	SET_TX_DESC_TX_RATE_8812(usb_frame, static_cast<uint8_t>(MRateToHwRate(fixed_rate))); // 原来设置的是6,也需要考虑下怎么转换
+  
+  if (ldpc){
+		SET_TX_DESC_DATA_LDPC_8812(usb_frame, ldpc);
 	}
 	
 	SET_TX_DESC_DATA_STBC_8812(usb_frame, stbc & 3);
@@ -180,16 +186,16 @@ bool Rtl8812aDevice::send_packet(const uint8_t* packet, size_t length) {
   uint8_t BWSettingOfDesc;
 	if(_channel.ChannelWidth== CHANNEL_WIDTH_80)
 	{
-		if(bandwidth == 80)
+		if(bwidth == 80)
 			BWSettingOfDesc= 2;
-		else if(bandwidth == 40)
+		else if(bwidth == 40)
 			BWSettingOfDesc = 1;
 		else
 			BWSettingOfDesc = 0;
 	}
 	else if(_channel.ChannelWidth== CHANNEL_WIDTH_40)
 	{
-		if((bandwidth == 40) || (bandwidth == 80))
+		if((bwidth == 40) || (bwidth == 80))
 			BWSettingOfDesc = 1;
 		else
 			BWSettingOfDesc = 0;
@@ -198,7 +204,7 @@ bool Rtl8812aDevice::send_packet(const uint8_t* packet, size_t length) {
 		BWSettingOfDesc = 0;
 
 	
-  SET_TX_DESC_DATA_BW_8812(usb_frame, 0); 
+  SET_TX_DESC_DATA_BW_8812(usb_frame, BWSettingOfDesc); 
 
   rtl8812a_cal_txdesc_chksum(usb_frame);
   _logger->info("tx desc formed");

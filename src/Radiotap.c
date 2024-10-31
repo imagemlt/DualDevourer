@@ -453,7 +453,274 @@ enum MGN_RATE {
         }
     }
 
-int test_main(){
+
+u8	MRateToHwRate(u8 rate)
+{
+	u8	ret = DESC_RATE1M;
+
+	switch (rate) {
+	case MGN_1M:
+		ret = DESC_RATE1M;
+		break;
+	case MGN_2M:
+		ret = DESC_RATE2M;
+		break;
+	case MGN_5_5M:
+		ret = DESC_RATE5_5M;
+		break;
+	case MGN_11M:
+		ret = DESC_RATE11M;
+		break;
+	case MGN_6M:
+		ret = DESC_RATE6M;
+		break;
+	case MGN_9M:
+		ret = DESC_RATE9M;
+		break;
+	case MGN_12M:
+		ret = DESC_RATE12M;
+		break;
+	case MGN_18M:
+		ret = DESC_RATE18M;
+		break;
+	case MGN_24M:
+		ret = DESC_RATE24M;
+		break;
+	case MGN_36M:
+		ret = DESC_RATE36M;
+		break;
+	case MGN_48M:
+		ret = DESC_RATE48M;
+		break;
+	case MGN_54M:
+		ret = DESC_RATE54M;
+		break;
+
+	case MGN_MCS0:
+		ret = DESC_RATEMCS0;
+		break;
+	case MGN_MCS1:
+		ret = DESC_RATEMCS1;
+		break;
+	case MGN_MCS2:
+		ret = DESC_RATEMCS2;
+		break;
+	case MGN_MCS3:
+		ret = DESC_RATEMCS3;
+		break;
+	case MGN_MCS4:
+		ret = DESC_RATEMCS4;
+		break;
+	case MGN_MCS5:
+		ret = DESC_RATEMCS5;
+		break;
+	case MGN_MCS6:
+		ret = DESC_RATEMCS6;
+		break;
+	case MGN_MCS7:
+		ret = DESC_RATEMCS7;
+		break;
+	case MGN_MCS8:
+		ret = DESC_RATEMCS8;
+		break;
+	case MGN_MCS9:
+		ret = DESC_RATEMCS9;
+		break;
+	case MGN_MCS10:
+		ret = DESC_RATEMCS10;
+		break;
+	case MGN_MCS11:
+		ret = DESC_RATEMCS11;
+		break;
+	case MGN_MCS12:
+		ret = DESC_RATEMCS12;
+		break;
+	case MGN_MCS13:
+		ret = DESC_RATEMCS13;
+		break;
+	case MGN_MCS14:
+		ret = DESC_RATEMCS14;
+		break;
+	case MGN_MCS15:
+		ret = DESC_RATEMCS15;
+		break;
+	case MGN_MCS16:
+		ret = DESC_RATEMCS16;
+		break;
+	case MGN_MCS17:
+		ret = DESC_RATEMCS17;
+		break;
+	case MGN_MCS18:
+		ret = DESC_RATEMCS18;
+		break;
+	case MGN_MCS19:
+		ret = DESC_RATEMCS19;
+		break;
+	case MGN_MCS20:
+		ret = DESC_RATEMCS20;
+		break;
+	case MGN_MCS21:
+		ret = DESC_RATEMCS21;
+		break;
+	case MGN_MCS22:
+		ret = DESC_RATEMCS22;
+		break;
+	case MGN_MCS23:
+		ret = DESC_RATEMCS23;
+		break;
+	case MGN_MCS24:
+		ret = DESC_RATEMCS24;
+		break;
+	case MGN_MCS25:
+		ret = DESC_RATEMCS25;
+		break;
+	case MGN_MCS26:
+		ret = DESC_RATEMCS26;
+		break;
+	case MGN_MCS27:
+		ret = DESC_RATEMCS27;
+		break;
+	case MGN_MCS28:
+		ret = DESC_RATEMCS28;
+		break;
+	case MGN_MCS29:
+		ret = DESC_RATEMCS29;
+		break;
+	case MGN_MCS30:
+		ret = DESC_RATEMCS30;
+		break;
+	case MGN_MCS31:
+		ret = DESC_RATEMCS31;
+		break;
+
+	case MGN_VHT1SS_MCS0:
+		ret = DESC_RATEVHTSS1MCS0;
+		break;
+	case MGN_VHT1SS_MCS1:
+		ret = DESC_RATEVHTSS1MCS1;
+		break;
+	case MGN_VHT1SS_MCS2:
+		ret = DESC_RATEVHTSS1MCS2;
+		break;
+	case MGN_VHT1SS_MCS3:
+		ret = DESC_RATEVHTSS1MCS3;
+		break;
+	case MGN_VHT1SS_MCS4:
+		ret = DESC_RATEVHTSS1MCS4;
+		break;
+	case MGN_VHT1SS_MCS5:
+		ret = DESC_RATEVHTSS1MCS5;
+		break;
+	case MGN_VHT1SS_MCS6:
+		ret = DESC_RATEVHTSS1MCS6;
+		break;
+	case MGN_VHT1SS_MCS7:
+		ret = DESC_RATEVHTSS1MCS7;
+		break;
+	case MGN_VHT1SS_MCS8:
+		ret = DESC_RATEVHTSS1MCS8;
+		break;
+	case MGN_VHT1SS_MCS9:
+		ret = DESC_RATEVHTSS1MCS9;
+		break;
+	case MGN_VHT2SS_MCS0:
+		ret = DESC_RATEVHTSS2MCS0;
+		break;
+	case MGN_VHT2SS_MCS1:
+		ret = DESC_RATEVHTSS2MCS1;
+		break;
+	case MGN_VHT2SS_MCS2:
+		ret = DESC_RATEVHTSS2MCS2;
+		break;
+	case MGN_VHT2SS_MCS3:
+		ret = DESC_RATEVHTSS2MCS3;
+		break;
+	case MGN_VHT2SS_MCS4:
+		ret = DESC_RATEVHTSS2MCS4;
+		break;
+	case MGN_VHT2SS_MCS5:
+		ret = DESC_RATEVHTSS2MCS5;
+		break;
+	case MGN_VHT2SS_MCS6:
+		ret = DESC_RATEVHTSS2MCS6;
+		break;
+	case MGN_VHT2SS_MCS7:
+		ret = DESC_RATEVHTSS2MCS7;
+		break;
+	case MGN_VHT2SS_MCS8:
+		ret = DESC_RATEVHTSS2MCS8;
+		break;
+	case MGN_VHT2SS_MCS9:
+		ret = DESC_RATEVHTSS2MCS9;
+		break;
+	case MGN_VHT3SS_MCS0:
+		ret = DESC_RATEVHTSS3MCS0;
+		break;
+	case MGN_VHT3SS_MCS1:
+		ret = DESC_RATEVHTSS3MCS1;
+		break;
+	case MGN_VHT3SS_MCS2:
+		ret = DESC_RATEVHTSS3MCS2;
+		break;
+	case MGN_VHT3SS_MCS3:
+		ret = DESC_RATEVHTSS3MCS3;
+		break;
+	case MGN_VHT3SS_MCS4:
+		ret = DESC_RATEVHTSS3MCS4;
+		break;
+	case MGN_VHT3SS_MCS5:
+		ret = DESC_RATEVHTSS3MCS5;
+		break;
+	case MGN_VHT3SS_MCS6:
+		ret = DESC_RATEVHTSS3MCS6;
+		break;
+	case MGN_VHT3SS_MCS7:
+		ret = DESC_RATEVHTSS3MCS7;
+		break;
+	case MGN_VHT3SS_MCS8:
+		ret = DESC_RATEVHTSS3MCS8;
+		break;
+	case MGN_VHT3SS_MCS9:
+		ret = DESC_RATEVHTSS3MCS9;
+		break;
+	case MGN_VHT4SS_MCS0:
+		ret = DESC_RATEVHTSS4MCS0;
+		break;
+	case MGN_VHT4SS_MCS1:
+		ret = DESC_RATEVHTSS4MCS1;
+		break;
+	case MGN_VHT4SS_MCS2:
+		ret = DESC_RATEVHTSS4MCS2;
+		break;
+	case MGN_VHT4SS_MCS3:
+		ret = DESC_RATEVHTSS4MCS3;
+		break;
+	case MGN_VHT4SS_MCS4:
+		ret = DESC_RATEVHTSS4MCS4;
+		break;
+	case MGN_VHT4SS_MCS5:
+		ret = DESC_RATEVHTSS4MCS5;
+		break;
+	case MGN_VHT4SS_MCS6:
+		ret = DESC_RATEVHTSS4MCS6;
+		break;
+	case MGN_VHT4SS_MCS7:
+		ret = DESC_RATEVHTSS4MCS7;
+		break;
+	case MGN_VHT4SS_MCS8:
+		ret = DESC_RATEVHTSS4MCS8;
+		break;
+	case MGN_VHT4SS_MCS9:
+		ret = DESC_RATEVHTSS4MCS9;
+		break;
+	default:
+		break;
+	}
+
+	return ret;
+}
+
+int parse_radiotap(){
 	int ret = 0;
 	int rtap_len;
 	int qos_len = 0;
