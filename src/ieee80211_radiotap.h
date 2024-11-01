@@ -4,9 +4,9 @@
 #include <sys/types.h>
 #include <errno.h>
 
-typedef uint32_t u32;
-typedef uint16_t u16;
-typedef uint8_t u8;
+typedef unsigned int u32;
+typedef unsigned short u16;
+typedef unsigned char u8;
 typedef u16 __le16;
 typedef u32 __le32;
 
