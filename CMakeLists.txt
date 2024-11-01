@@ -65,6 +65,5 @@ target_link_libraries(WiFiDriver PRIVATE
 
 set_property(TARGET WiFiDriver PROPERTY CXX_STANDARD 20)
 target_include_directories(WiFiDriver PRIVATE hal)
-target_include_directories(WiFiDriver PRIVATE wfb-ng)
 target_compile_options(WiFiDriver PRIVATE)
 target_link_options(WiFiDriver PRIVATE)
