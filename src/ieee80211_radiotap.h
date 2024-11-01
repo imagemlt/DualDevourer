@@ -540,5 +540,5 @@ typedef u32 __le32;
     int
     ieee80211_radiotap_iterator_next(struct ieee80211_radiotap_iterator *iterator);
 
-    u16 GetSequence(const u8* packet)
+    u16 GetSequence(const u8* packet);
     u8 MRateToHwRate(u8 rate);
