@@ -242,6 +242,8 @@ typedef u32 __le32;
 /* Base version of the radiotap packet header data */
 #define PKTHDR_RADIOTAP_VERSION         0
 
+#define GetSequence(pbuf)	(cpu_to_le16(*(unsigned short *)((SIZE_PTR)(pbuf) + 22)) >> 4)
+
 
     static inline u16 __get_unaligned_memmove16(const void *p)
     {

@@ -158,8 +158,7 @@ bool Rtl8812aDevice::send_packet(const uint8_t* packet, size_t length) {
 
 	SET_TX_DESC_QUEUE_SEL_8812(usb_frame,0x12);
   SET_TX_DESC_HWSEQ_EN_8812(usb_frame, static_cast<uint8_t>(0)); /* Hw do not set sequence number */
-	SET_TX_DESC_SEQ_8812(usb_frame, debug); /* Copy inject sequence number to TxDesc */
-        debug ++;
+	SET_TX_DESC_SEQ_8812(usb_frame, GetSequence(packet + radiotap_length)); /* Copy inject sequence number to TxDesc */
 	SET_TX_DESC_RETRY_LIMIT_ENABLE_8812(usb_frame, static_cast<uint8_t>(1));
 
 	SET_TX_DESC_DATA_RETRY_LIMIT_8812(usb_frame, static_cast<uint8_t>(0));
