@@ -242,13 +242,7 @@ typedef u32 __le32;
 /* Base version of the radiotap packet header data */
 #define PKTHDR_RADIOTAP_VERSION         0
 
-u16  GetSequence(const u8* packet) {
-   // 假设Sequence Control位于从第22个字节开始的位置，占两个字节
-    u16 seqCtrl = (u16)(packet[22]) | (u16)(packet[23] << 8);
-    // 序列号为seqCtrl的高12位（从0号位开始计数）
-    u16 seqNum = (seqCtrl >> 4) & 0x0FFF;
-    return seqNum;
-}
+
 
 
     static inline u16 __get_unaligned_memmove16(const void *p)
@@ -546,4 +540,5 @@ u16  GetSequence(const u8* packet) {
     int
     ieee80211_radiotap_iterator_next(struct ieee80211_radiotap_iterator *iterator);
 
+    u16 GetSequence(const u8* packet)
     u8 MRateToHwRate(u8 rate);
