@@ -50,7 +50,7 @@ int main(int argc,char **argv) {
   fd = atoi(argv[1]);
   logger->info("got fd {}",fd);
 
-  libusb_set_option(context, LIBUSB_OPTION_LOG_LEVEL, LIBUSB_LOG_LEVEL_DEBUG);
+  //libusb_set_option(context, LIBUSB_OPTION_LOG_LEVEL, LIBUSB_LOG_LEVEL_DEBUG);
   libusb_set_option(NULL, LIBUSB_OPTION_NO_DEVICE_DISCOVERY);
   libusb_set_option(NULL, LIBUSB_OPTION_WEAK_AUTHORITY);
   

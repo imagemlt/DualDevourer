@@ -141,7 +141,7 @@ bool Rtl8812aDevice::send_packet(const uint8_t* packet, size_t length) {
   SET_TX_DESC_LAST_SEG_8812(usb_frame, 1);
   SET_TX_DESC_OWN_8812(usb_frame,1);
 
-  SET_TX_DESC_PKT_SIZE_8812(usb_frame, static_cast<uint8_t>(real_packet_length));
+  SET_TX_DESC_PKT_SIZE_8812(usb_frame, static_cast<uint32_t>(real_packet_length));
   
   SET_TX_DESC_OFFSET_8812(usb_frame,static_cast<uint8_t>(TXDESC_SIZE + OFFSET_SZ));
 
