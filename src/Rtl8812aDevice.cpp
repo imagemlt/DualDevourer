@@ -20,7 +20,8 @@ void Rtl8812aDevice::InitWrite(SelectedChannel channel){
 }
 
 bool Rtl8812aDevice::send_packet(const uint8_t* packet, size_t length) {
-    struct tx_desc *ptxdesc;
+  struct tx_desc *ptxdesc;
+  bool resp;
   uint8_t* usb_frame;
   //struct ieee80211_radiotap_header *rtap_hdr;
   int real_packet_length,usb_frame_length,radiotap_length;
@@ -225,7 +226,9 @@ bool Rtl8812aDevice::send_packet(const uint8_t* packet, size_t length) {
     }
     std::cout << std::dec << std::endl;  // Reset to decimal formatting
 					
-    return _device.send_packet(usb_frame,usb_frame_length);
+    resp = _device.send_packet(usb_frame,usb_frame_length);
+	delete[] usb_frame;
+	return resp;
 }
 
 void Rtl8812aDevice::Init(Action_ParsedRadioPacket packetProcessor,
