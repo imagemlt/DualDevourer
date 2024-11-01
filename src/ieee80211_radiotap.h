@@ -244,7 +244,7 @@ typedef u32 __le32;
 
 u16  GetSequence(const u8* packet) {
    // 假设Sequence Control位于从第22个字节开始的位置，占两个字节
-    u16 seqCtrl = static_cast<u16>(packet[22]) | static_cast<u16>(packet[23] << 8);
+    u16 seqCtrl = u16(packet[22]) | u16(packet[23] << 8);
     // 序列号为seqCtrl的高12位（从0号位开始计数）
     u16 seqNum = (seqCtrl >> 4) & 0x0FFF;
     return seqNum;
