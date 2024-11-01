@@ -242,7 +242,13 @@ typedef u32 __le32;
 /* Base version of the radiotap packet header data */
 #define PKTHDR_RADIOTAP_VERSION         0
 
-#define GetSequence(pbuf)	(cpu_to_le16(*(unsigned short *)((SIZE_PTR)(pbuf) + 22)) >> 4)
+uint16_t  GetSequence(const uint8_t* packet) {
+   // 假设Sequence Control位于从第22个字节开始的位置，占两个字节
+    uint16_t seqCtrl = static_cast<uint16_t>(packet[22]) | static_cast<uint16_t>(packet[23] << 8);
+    // 序列号为seqCtrl的高12位（从0号位开始计数）
+    uint16_t seqNum = (seqCtrl >> 4) & 0x0FFF;
+    return seqNum;
+}
 
 
     static inline u16 __get_unaligned_memmove16(const void *p)

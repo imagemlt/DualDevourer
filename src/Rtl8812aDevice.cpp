@@ -153,34 +153,27 @@ bool Rtl8812aDevice::send_packet(const uint8_t* packet, size_t length) {
   }
 
   SET_TX_DESC_BMC_8812(usb_frame, 1);
-	SET_TX_DESC_RATE_ID_8812(usb_frame, static_cast<uint8_t>(rate_id)); // 原来设置的是7，得考虑下
-									    //
+  SET_TX_DESC_RATE_ID_8812(usb_frame, static_cast<uint8_t>(rate_id)); // 原来设置的是7，得考虑下
 
-	SET_TX_DESC_QUEUE_SEL_8812(usb_frame,0x12);
+  SET_TX_DESC_QUEUE_SEL_8812(usb_frame,0x12);
   SET_TX_DESC_HWSEQ_EN_8812(usb_frame, static_cast<uint8_t>(0)); /* Hw do not set sequence number */
-	SET_TX_DESC_SEQ_8812(usb_frame, GetSequence(packet + radiotap_length)); /* Copy inject sequence number to TxDesc */
-	SET_TX_DESC_RETRY_LIMIT_ENABLE_8812(usb_frame, static_cast<uint8_t>(1));
+  SET_TX_DESC_SEQ_8812(usb_frame, GetSequence(packet + radiotap_length)); /* Copy inject sequence number to TxDesc */
+  SET_TX_DESC_RETRY_LIMIT_ENABLE_8812(usb_frame, static_cast<uint8_t>(1));
 
-	SET_TX_DESC_DATA_RETRY_LIMIT_8812(usb_frame, static_cast<uint8_t>(0));
+  SET_TX_DESC_DATA_RETRY_LIMIT_8812(usb_frame, static_cast<uint8_t>(0));
   if(sgi){
     _logger->info("short gi enabled,set sgi");
     SET_TX_DESC_DATA_SHORT_8812(usb_frame, 1);
   }
-
-
-
-	SET_TX_DESC_DISABLE_FB_8812(usb_frame, 1); 
-
-	SET_TX_DESC_USE_RATE_8812(usb_frame, 1);
-        
-  
-	SET_TX_DESC_TX_RATE_8812(usb_frame, static_cast<uint8_t>(MRateToHwRate(fixed_rate))); // 原来设置的是6,也需要考虑下怎么转换
+  SET_TX_DESC_DISABLE_FB_8812(usb_frame, 1); 
+  SET_TX_DESC_USE_RATE_8812(usb_frame, 1);
+  SET_TX_DESC_TX_RATE_8812(usb_frame, static_cast<uint8_t>(MRateToHwRate(fixed_rate))); // 原来设置的是6,也需要考虑下怎么转换
   
   if (ldpc){
-		SET_TX_DESC_DATA_LDPC_8812(usb_frame, ldpc);
-	}
+	SET_TX_DESC_DATA_LDPC_8812(usb_frame, ldpc);
+  }
 	
-	SET_TX_DESC_DATA_STBC_8812(usb_frame, stbc & 3);
+  SET_TX_DESC_DATA_STBC_8812(usb_frame, stbc & 3);
 	
   uint8_t BWSettingOfDesc;
 	if(_channel.ChannelWidth== CHANNEL_WIDTH_80)
