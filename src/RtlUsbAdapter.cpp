@@ -323,10 +323,12 @@ bool RtlUsbAdapter::send_packet(uint8_t* packet, size_t length) {
 	
 	
   int actual_length = 0;
-  
+  auto start = std::chrono::high_resolution_clock::now();
   int rc = libusb_bulk_transfer(_dev_handle, 0x02, packet, length, &actual_length, USB_TIMEOUT);
+  auto end = std::chrono::high_resolution_clock::now();
+  std::chrono::duration<double, std::milli> elapsed = end - start;
   if (rc == LIBUSB_SUCCESS && actual_length == length) {
-    _logger->info("Packet sent successfully, length: {}", length);
+    _logger->info("Packet sent successfully, length: {},used time {}ms", length,elapsed.count());
      return true;
   } else {
     _logger->error("Failed to send packet, error code: {}, actual length: {}", rc, actual_length);
