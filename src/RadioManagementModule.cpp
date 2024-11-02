@@ -1151,6 +1151,334 @@ void RadioManagementModule::PHY_SetTxPowerIndexByRateArray(
 void RadioManagementModule::PHY_SetTxPowerIndex_8812A(uint32_t powerIndex,
                                                       RfPath rfPath,
                                                       MGN_RATE rate) {
+
+  if(powerIndex % 2 == 1) powerIndex -= 1;
+  if (rfPath == RF_PATH_A) {
+		switch (Rate) {
+		case MGN_1M:
+			_device.phy_set_bb_reg(rTxAGC_A_CCK11_CCK1_JAguar, bMaskByte0, PowerIndex);
+			break;
+		case MGN_2M:
+			_device.phy_set_bb_reg( rTxAGC_A_CCK11_CCK1_JAguar, bMaskByte1, PowerIndex);
+			break;
+		case MGN_5_5M:
+			_device.phy_set_bb_reg( rTxAGC_A_CCK11_CCK1_JAguar, bMaskByte2, PowerIndex);
+			break;
+		case MGN_11M:
+			_device.phy_set_bb_reg( rTxAGC_A_CCK11_CCK1_JAguar, bMaskByte3, PowerIndex);
+			break;
+
+		case MGN_6M:
+			_device.phy_set_bb_reg( rTxAGC_A_Ofdm18_Ofdm6_JAguar, bMaskByte0, PowerIndex);
+			break;
+		case MGN_9M:
+			_device.phy_set_bb_reg( rTxAGC_A_Ofdm18_Ofdm6_JAguar, bMaskByte1, PowerIndex);
+			break;
+		case MGN_12M:
+			_device.phy_set_bb_reg( rTxAGC_A_Ofdm18_Ofdm6_JAguar, bMaskByte2, PowerIndex);
+			break;
+		case MGN_18M:
+			_device.phy_set_bb_reg( rTxAGC_A_Ofdm18_Ofdm6_JAguar, bMaskByte3, PowerIndex);
+			break;
+
+		case MGN_24M:
+			_device.phy_set_bb_reg( rTxAGC_A_Ofdm54_Ofdm24_JAguar, bMaskByte0, PowerIndex);
+			break;
+		case MGN_36M:
+			_device.phy_set_bb_reg( rTxAGC_A_Ofdm54_Ofdm24_JAguar, bMaskByte1, PowerIndex);
+			break;
+		case MGN_48M:
+			_device.phy_set_bb_reg( rTxAGC_A_Ofdm54_Ofdm24_JAguar, bMaskByte2, PowerIndex);
+			break;
+		case MGN_54M:
+			_device.phy_set_bb_reg( rTxAGC_A_Ofdm54_Ofdm24_JAguar, bMaskByte3, PowerIndex);
+			break;
+
+		case MGN_MCS0:
+			_device.phy_set_bb_reg( rTxAGC_A_MCS3_MCS0_JAguar, bMaskByte0, PowerIndex);
+			break;
+		case MGN_MCS1:
+			_device.phy_set_bb_reg( rTxAGC_A_MCS3_MCS0_JAguar, bMaskByte1, PowerIndex);
+			break;
+		case MGN_MCS2:
+			_device.phy_set_bb_reg( rTxAGC_A_MCS3_MCS0_JAguar, bMaskByte2, PowerIndex);
+			break;
+		case MGN_MCS3:
+			_device.phy_set_bb_reg( rTxAGC_A_MCS3_MCS0_JAguar, bMaskByte3, PowerIndex);
+			break;
+
+		case MGN_MCS4:
+			_device.phy_set_bb_reg( rTxAGC_A_MCS7_MCS4_JAguar, bMaskByte0, PowerIndex);
+			break;
+		case MGN_MCS5:
+			_device.phy_set_bb_reg( rTxAGC_A_MCS7_MCS4_JAguar, bMaskByte1, PowerIndex);
+			break;
+		case MGN_MCS6:
+			_device.phy_set_bb_reg( rTxAGC_A_MCS7_MCS4_JAguar, bMaskByte2, PowerIndex);
+			break;
+		case MGN_MCS7:
+			_device.phy_set_bb_reg( rTxAGC_A_MCS7_MCS4_JAguar, bMaskByte3, PowerIndex);
+			break;
+
+		case MGN_MCS8:
+			_device.phy_set_bb_reg( rTxAGC_A_MCS11_MCS8_JAguar, bMaskByte0, PowerIndex);
+			break;
+		case MGN_MCS9:
+			_device.phy_set_bb_reg( rTxAGC_A_MCS11_MCS8_JAguar, bMaskByte1, PowerIndex);
+			break;
+		case MGN_MCS10:
+			_device.phy_set_bb_reg( rTxAGC_A_MCS11_MCS8_JAguar, bMaskByte2, PowerIndex);
+			break;
+		case MGN_MCS11:
+			_device.phy_set_bb_reg( rTxAGC_A_MCS11_MCS8_JAguar, bMaskByte3, PowerIndex);
+			break;
+
+		case MGN_MCS12:
+			_device.phy_set_bb_reg( rTxAGC_A_MCS15_MCS12_JAguar, bMaskByte0, PowerIndex);
+			break;
+		case MGN_MCS13:
+			_device.phy_set_bb_reg( rTxAGC_A_MCS15_MCS12_JAguar, bMaskByte1, PowerIndex);
+			break;
+		case MGN_MCS14:
+			_device.phy_set_bb_reg( rTxAGC_A_MCS15_MCS12_JAguar, bMaskByte2, PowerIndex);
+			break;
+		case MGN_MCS15:
+			_device.phy_set_bb_reg( rTxAGC_A_MCS15_MCS12_JAguar, bMaskByte3, PowerIndex);
+			break;
+
+		case MGN_VHT1SS_MCS0:
+			_device.phy_set_bb_reg( rTxAGC_A_Nss1Index3_Nss1Index0_JAguar, bMaskByte0, PowerIndex);
+			break;
+		case MGN_VHT1SS_MCS1:
+			_device.phy_set_bb_reg( rTxAGC_A_Nss1Index3_Nss1Index0_JAguar, bMaskByte1, PowerIndex);
+			break;
+		case MGN_VHT1SS_MCS2:
+			_device.phy_set_bb_reg( rTxAGC_A_Nss1Index3_Nss1Index0_JAguar, bMaskByte2, PowerIndex);
+			break;
+		case MGN_VHT1SS_MCS3:
+			_device.phy_set_bb_reg( rTxAGC_A_Nss1Index3_Nss1Index0_JAguar, bMaskByte3, PowerIndex);
+			break;
+
+		case MGN_VHT1SS_MCS4:
+			_device.phy_set_bb_reg( rTxAGC_A_Nss1Index7_Nss1Index4_JAguar, bMaskByte0, PowerIndex);
+			break;
+		case MGN_VHT1SS_MCS5:
+			_device.phy_set_bb_reg( rTxAGC_A_Nss1Index7_Nss1Index4_JAguar, bMaskByte1, PowerIndex);
+			break;
+		case MGN_VHT1SS_MCS6:
+			_device.phy_set_bb_reg( rTxAGC_A_Nss1Index7_Nss1Index4_JAguar, bMaskByte2, PowerIndex);
+			break;
+		case MGN_VHT1SS_MCS7:
+			_device.phy_set_bb_reg( rTxAGC_A_Nss1Index7_Nss1Index4_JAguar, bMaskByte3, PowerIndex);
+			break;
+
+		case MGN_VHT1SS_MCS8:
+			_device.phy_set_bb_reg( rTxAGC_A_Nss2Index1_Nss1Index8_JAguar, bMaskByte0, PowerIndex);
+			break;
+		case MGN_VHT1SS_MCS9:
+			_device.phy_set_bb_reg( rTxAGC_A_Nss2Index1_Nss1Index8_JAguar, bMaskByte1, PowerIndex);
+			break;
+		case MGN_VHT2SS_MCS0:
+			_device.phy_set_bb_reg( rTxAGC_A_Nss2Index1_Nss1Index8_JAguar, bMaskByte2, PowerIndex);
+			break;
+		case MGN_VHT2SS_MCS1:
+			_device.phy_set_bb_reg( rTxAGC_A_Nss2Index1_Nss1Index8_JAguar, bMaskByte3, PowerIndex);
+			break;
+
+		case MGN_VHT2SS_MCS2:
+			_device.phy_set_bb_reg( rTxAGC_A_Nss2Index5_Nss2Index2_JAguar, bMaskByte0, PowerIndex);
+			break;
+		case MGN_VHT2SS_MCS3:
+			_device.phy_set_bb_reg( rTxAGC_A_Nss2Index5_Nss2Index2_JAguar, bMaskByte1, PowerIndex);
+			break;
+		case MGN_VHT2SS_MCS4:
+			_device.phy_set_bb_reg( rTxAGC_A_Nss2Index5_Nss2Index2_JAguar, bMaskByte2, PowerIndex);
+			break;
+		case MGN_VHT2SS_MCS5:
+			_device.phy_set_bb_reg( rTxAGC_A_Nss2Index5_Nss2Index2_JAguar, bMaskByte3, PowerIndex);
+			break;
+
+		case MGN_VHT2SS_MCS6:
+			_device.phy_set_bb_reg( rTxAGC_A_Nss2Index9_Nss2Index6_JAguar, bMaskByte0, PowerIndex);
+			break;
+		case MGN_VHT2SS_MCS7:
+			_device.phy_set_bb_reg( rTxAGC_A_Nss2Index9_Nss2Index6_JAguar, bMaskByte1, PowerIndex);
+			break;
+		case MGN_VHT2SS_MCS8:
+			_device.phy_set_bb_reg( rTxAGC_A_Nss2Index9_Nss2Index6_JAguar, bMaskByte2, PowerIndex);
+			break;
+		case MGN_VHT2SS_MCS9:
+			_device.phy_set_bb_reg( rTxAGC_A_Nss2Index9_Nss2Index6_JAguar, bMaskByte3, PowerIndex);
+			break;
+
+		default:
+			RTW_INFO("Invalid Rate!!\n");
+			break;
+		}
+	} else if (RFPath == RF_PATH_B) {
+		switch (Rate) {
+		case MGN_1M:
+		 _device.phy_set_bb_reg(rTxAGC_B_CCK11_CCK1_JAguar, bMaskByte0, PowerIndex);
+			break;
+		case MGN_2M:
+		 _device.phy_set_bb_reg(rTxAGC_B_CCK11_CCK1_JAguar, bMaskByte1, PowerIndex);
+			break;
+		case MGN_5_5M:
+		 _device.phy_set_bb_reg(rTxAGC_B_CCK11_CCK1_JAguar, bMaskByte2, PowerIndex);
+			break;
+		case MGN_11M:
+		 _device.phy_set_bb_reg(rTxAGC_B_CCK11_CCK1_JAguar, bMaskByte3, PowerIndex);
+			break;
+
+		case MGN_6M:
+		 _device.phy_set_bb_reg(rTxAGC_B_Ofdm18_Ofdm6_JAguar, bMaskByte0, PowerIndex);
+			break;
+		case MGN_9M:
+		 _device.phy_set_bb_reg(rTxAGC_B_Ofdm18_Ofdm6_JAguar, bMaskByte1, PowerIndex);
+			break;
+		case MGN_12M:
+		 _device.phy_set_bb_reg(rTxAGC_B_Ofdm18_Ofdm6_JAguar, bMaskByte2, PowerIndex);
+			break;
+		case MGN_18M:
+		 _device.phy_set_bb_reg(rTxAGC_B_Ofdm18_Ofdm6_JAguar, bMaskByte3, PowerIndex);
+			break;
+
+		case MGN_24M:
+		 _device.phy_set_bb_reg(rTxAGC_B_Ofdm54_Ofdm24_JAguar, bMaskByte0, PowerIndex);
+			break;
+		case MGN_36M:
+		 _device.phy_set_bb_reg(rTxAGC_B_Ofdm54_Ofdm24_JAguar, bMaskByte1, PowerIndex);
+			break;
+		case MGN_48M:
+		 _device.phy_set_bb_reg(rTxAGC_B_Ofdm54_Ofdm24_JAguar, bMaskByte2, PowerIndex);
+			break;
+		case MGN_54M:
+		 _device.phy_set_bb_reg(rTxAGC_B_Ofdm54_Ofdm24_JAguar, bMaskByte3, PowerIndex);
+			break;
+
+		case MGN_MCS0:
+		 _device.phy_set_bb_reg(rTxAGC_B_MCS3_MCS0_JAguar, bMaskByte0, PowerIndex);
+			break;
+		case MGN_MCS1:
+		 _device.phy_set_bb_reg(rTxAGC_B_MCS3_MCS0_JAguar, bMaskByte1, PowerIndex);
+			break;
+		case MGN_MCS2:
+		 _device.phy_set_bb_reg(rTxAGC_B_MCS3_MCS0_JAguar, bMaskByte2, PowerIndex);
+			break;
+		case MGN_MCS3:
+		 _device.phy_set_bb_reg(rTxAGC_B_MCS3_MCS0_JAguar, bMaskByte3, PowerIndex);
+			break;
+
+		case MGN_MCS4:
+		 _device.phy_set_bb_reg(rTxAGC_B_MCS7_MCS4_JAguar, bMaskByte0, PowerIndex);
+			break;
+		case MGN_MCS5:
+		 _device.phy_set_bb_reg(rTxAGC_B_MCS7_MCS4_JAguar, bMaskByte1, PowerIndex);
+			break;
+		case MGN_MCS6:
+		 _device.phy_set_bb_reg(rTxAGC_B_MCS7_MCS4_JAguar, bMaskByte2, PowerIndex);
+			break;
+		case MGN_MCS7:
+		 _device.phy_set_bb_reg(rTxAGC_B_MCS7_MCS4_JAguar, bMaskByte3, PowerIndex);
+			break;
+
+		case MGN_MCS8:
+		 _device.phy_set_bb_reg(rTxAGC_B_MCS11_MCS8_JAguar, bMaskByte0, PowerIndex);
+			break;
+		case MGN_MCS9:
+		 _device.phy_set_bb_reg(rTxAGC_B_MCS11_MCS8_JAguar, bMaskByte1, PowerIndex);
+			break;
+		case MGN_MCS10:
+		 _device.phy_set_bb_reg(rTxAGC_B_MCS11_MCS8_JAguar, bMaskByte2, PowerIndex);
+			break;
+		case MGN_MCS11:
+		 _device.phy_set_bb_reg(rTxAGC_B_MCS11_MCS8_JAguar, bMaskByte3, PowerIndex);
+			break;
+
+		case MGN_MCS12:
+		 _device.phy_set_bb_reg(rTxAGC_B_MCS15_MCS12_JAguar, bMaskByte0, PowerIndex);
+			break;
+		case MGN_MCS13:
+		 _device.phy_set_bb_reg(rTxAGC_B_MCS15_MCS12_JAguar, bMaskByte1, PowerIndex);
+			break;
+		case MGN_MCS14:
+		 _device.phy_set_bb_reg(rTxAGC_B_MCS15_MCS12_JAguar, bMaskByte2, PowerIndex);
+			break;
+		case MGN_MCS15:
+		 _device.phy_set_bb_reg(rTxAGC_B_MCS15_MCS12_JAguar, bMaskByte3, PowerIndex);
+			break;
+
+		case MGN_VHT1SS_MCS0:
+		 _device.phy_set_bb_reg(rTxAGC_B_Nss1Index3_Nss1Index0_JAguar, bMaskByte0, PowerIndex);
+			break;
+		case MGN_VHT1SS_MCS1:
+		 _device.phy_set_bb_reg(rTxAGC_B_Nss1Index3_Nss1Index0_JAguar, bMaskByte1, PowerIndex);
+			break;
+		case MGN_VHT1SS_MCS2:
+		 _device.phy_set_bb_reg(rTxAGC_B_Nss1Index3_Nss1Index0_JAguar, bMaskByte2, PowerIndex);
+			break;
+		case MGN_VHT1SS_MCS3:
+		 _device.phy_set_bb_reg(rTxAGC_B_Nss1Index3_Nss1Index0_JAguar, bMaskByte3, PowerIndex);
+			break;
+
+		case MGN_VHT1SS_MCS4:
+		 _device.phy_set_bb_reg(rTxAGC_B_Nss1Index7_Nss1Index4_JAguar, bMaskByte0, PowerIndex);
+			break;
+		case MGN_VHT1SS_MCS5:
+		 _device.phy_set_bb_reg(rTxAGC_B_Nss1Index7_Nss1Index4_JAguar, bMaskByte1, PowerIndex);
+			break;
+		case MGN_VHT1SS_MCS6:
+		 _device.phy_set_bb_reg(rTxAGC_B_Nss1Index7_Nss1Index4_JAguar, bMaskByte2, PowerIndex);
+			break;
+		case MGN_VHT1SS_MCS7:
+		 _device.phy_set_bb_reg(rTxAGC_B_Nss1Index7_Nss1Index4_JAguar, bMaskByte3, PowerIndex);
+			break;
+
+		case MGN_VHT1SS_MCS8:
+		 _device.phy_set_bb_reg(rTxAGC_B_Nss2Index1_Nss1Index8_JAguar, bMaskByte0, PowerIndex);
+			break;
+		case MGN_VHT1SS_MCS9:
+		 _device.phy_set_bb_reg(rTxAGC_B_Nss2Index1_Nss1Index8_JAguar, bMaskByte1, PowerIndex);
+			break;
+		case MGN_VHT2SS_MCS0:
+		 _device.phy_set_bb_reg(rTxAGC_B_Nss2Index1_Nss1Index8_JAguar, bMaskByte2, PowerIndex);
+			break;
+		case MGN_VHT2SS_MCS1:
+		 _device.phy_set_bb_reg(rTxAGC_B_Nss2Index1_Nss1Index8_JAguar, bMaskByte3, PowerIndex);
+			break;
+
+		case MGN_VHT2SS_MCS2:
+		 _device.phy_set_bb_reg(rTxAGC_B_Nss2Index5_Nss2Index2_JAguar, bMaskByte0, PowerIndex);
+			break;
+		case MGN_VHT2SS_MCS3:
+		 _device.phy_set_bb_reg(rTxAGC_B_Nss2Index5_Nss2Index2_JAguar, bMaskByte1, PowerIndex);
+			break;
+		case MGN_VHT2SS_MCS4:
+		 _device.phy_set_bb_reg(rTxAGC_B_Nss2Index5_Nss2Index2_JAguar, bMaskByte2, PowerIndex);
+			break;
+		case MGN_VHT2SS_MCS5:
+		 _device.phy_set_bb_reg(rTxAGC_B_Nss2Index5_Nss2Index2_JAguar, bMaskByte3, PowerIndex);
+			break;
+
+		case MGN_VHT2SS_MCS6:
+		 _device.phy_set_bb_reg(rTxAGC_B_Nss2Index9_Nss2Index6_JAguar, bMaskByte0, PowerIndex);
+			break;
+		case MGN_VHT2SS_MCS7:
+		 _device.phy_set_bb_reg(rTxAGC_B_Nss2Index9_Nss2Index6_JAguar, bMaskByte1, PowerIndex);
+			break;
+		case MGN_VHT2SS_MCS8:
+		 _device.phy_set_bb_reg(rTxAGC_B_Nss2Index9_Nss2Index6_JAguar, bMaskByte2, PowerIndex);
+			break;
+		case MGN_VHT2SS_MCS9:
+		 _device.phy_set_bb_reg(rTxAGC_B_Nss2Index9_Nss2Index6_JAguar, bMaskByte3, PowerIndex);
+			break;
+
+		default:
+			_logger.error("Invalid Rate!!\n");
+			break;
+		}
+	} else
+		_logger.error("Invalid RFPath!!\n");
 #if 0
         if (PowerIndexDescription.SetTable.TryGetValue(rfPath, out var rfTable))
         {
