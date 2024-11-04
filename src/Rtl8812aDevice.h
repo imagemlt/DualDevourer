@@ -37,6 +37,7 @@ public:
   void Init(Action_ParsedRadioPacket packetProcessor, SelectedChannel channel);
   void SetMonitorChannel(SelectedChannel channel);
   void InitWrite(SelectedChannel channel);
+  void SetTxPower(uint8_t power);
   bool send_packet(const uint8_t* packet, size_t length);
   SelectedChannel GetSelectedChannel();
 

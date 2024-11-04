@@ -286,6 +286,10 @@ void Rtl8812aDevice::StartWithMonitorMode(SelectedChannel selectedChannel) {
   _radioManagement->SetMonitorMode();
 }
 
+void Rtl8812aDevice::SetTxPower(uint8_t power){
+  _radioManagement->SetTxPower(power);
+}
+
 bool Rtl8812aDevice::NetDevOpen(SelectedChannel selectedChannel) {
   auto status = _halModule.rtw_hal_init(selectedChannel);
   if (status == false) {
