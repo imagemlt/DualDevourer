@@ -7,8 +7,6 @@ find_package(PkgConfig REQUIRED)
 
 # this calls create special `PkgConfig::LIBUSB` variables
 pkg_check_modules(LIBUSB REQUIRED IMPORTED_TARGET libusb-1.0)
-pkg_check_modules(LIBPCAP REQUIRED IMPORTED_TARGET libpcap)
-pkg_check_modules(LIBSODIUM REQUIRED IMPORTED_TARGET libsodium)
 
 find_package(spdlog CONFIG REQUIRED)
 
@@ -55,8 +53,6 @@ add_executable(WiFiDriver
 
 target_link_libraries(WiFiDriver PRIVATE
     PkgConfig::LIBUSB
-    PkgConfig::LIBPCAP
-    PkgConfig::LIBSODIUM
 
     # use the header-only version
     spdlog::spdlog_header_only
