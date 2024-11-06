@@ -1138,6 +1138,7 @@ const static std::vector<MGN_RATE> rates_by_sections[] = {
 
 void RadioManagementModule::SetTxPower(uint8_t p){
 	power = p;
+	_logger->info("iwconfig wlan0 txpower {}",p);
 	//PHY_SetTxPowerLevel8812(_currentChannel);
 }
 
