@@ -73,11 +73,12 @@ int main(int argc,char **argv) {
   auto rtlDevice = wifi_driver.CreateRtlDevice(handle);
   pid_t fpid;
   fpid=fork();
+  rtlDevice->SetTxPower(40);
   if( fpid == 0){
 
   
   rtlDevice->Init(packetProcessor,SelectedChannel{
-                                       .Channel = static_cast<uint8_t>(161),
+                                       .Channel = static_cast<uint8_t>(36),
                                        .ChannelOffset = 0,
                                        .ChannelWidth = CHANNEL_WIDTH_20,
 
@@ -88,7 +89,6 @@ int main(int argc,char **argv) {
   //循环发包
   
   sleep(5);
-  rtlDevice->SetTxPower(25);
  
   uint8_t beacon_frame[]={
     0x00, 0x00, 0x0d, 0x00, 0x00, 0x80, 0x08, 0x00, 0x08, 0x00, 0x37, 0x00, 0x01,// radiotap header

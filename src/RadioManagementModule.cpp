@@ -207,7 +207,6 @@ void RadioManagementModule::phy_SwChnlAndSetBwMode8812() {
     phy_PostSetBwMode8812();
     _setChannelBw = false;
   }
-
   PHY_SetTxPowerLevel8812(_currentChannel);
 
   _needIQK = false;
@@ -1139,10 +1138,10 @@ const static std::vector<MGN_RATE> rates_by_sections[] = {
 
 void RadioManagementModule::SetTxPower(uint8_t p){
 	power = p;
-	PHY_SetTxPowerLevel8812(_currentChannel);
+	//PHY_SetTxPowerLevel8812(_currentChannel);
 }
 
-static uint8_t phy_get_tx_power_index() { return 28; }
+static uint8_t phy_get_tx_power_index() { return 16; }
 
 void RadioManagementModule::PHY_SetTxPowerIndexByRateArray(
     RfPath rfPath, const std::vector<MGN_RATE> &rates) {
@@ -1157,7 +1156,7 @@ void RadioManagementModule::PHY_SetTxPowerIndex_8812A(uint32_t powerIndex,
                                                       RfPath rfPath,
                                                       MGN_RATE rate) {
 
-  _logger->info("PHY_SetTxPowerIndex {} {} {}",powerIndex,rfPath,rate);
+  _logger->debug("PHY_SetTxPowerIndex {} {} {}",powerIndex,rfPath,rate);
   if(powerIndex % 2 == 1) powerIndex -= 1;
   if (rfPath == RF_PATH_A) {
 		switch (rate) {
