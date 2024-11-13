@@ -34,6 +34,16 @@ void printHexArray(const uint8_t *array, size_t length) {
 
 static void packetProcessor(const ParsedRadioPacket &packet) {}
 
+void usb_event_loop(Logger_t _logger,libusb_context* ctx){
+  while (true) {
+    int r = libusb_handle_events(ctx);
+    if (r < 0) {
+      _logger->error("Error handling events: {}", r);
+      break;
+    }
+  }
+}
+
 int main(int argc, char **argv) {
   libusb_context *context;
   libusb_device_handle *handle;
@@ -90,6 +100,8 @@ int main(int argc, char **argv) {
 
   sleep(5);
 
+  // 新线程开启libusb事件循环
+  std::thread usb_thread(usb_event_loop,logger,context);
   uint8_t beacon_frame[] = {
       0x00, 0x00, 0x0d, 0x00, 0x00, 0x80, 0x08, 0x00, 0x08, 0x00, 0x37,
       0x00, 0x01, // radiotap header

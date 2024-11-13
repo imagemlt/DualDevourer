@@ -2,6 +2,7 @@
 #define LOGGER_H
 
 #include <spdlog/logger.h>
+#include <spdlog/fmt/ostr.h> 
 
 typedef unsigned short ushort; 
 using logger = spdlog::logger;

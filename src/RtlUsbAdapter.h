@@ -2,12 +2,13 @@
 #define RTLUSBADAPTER_H
 
 #include <iostream>
-
 #include <libusb-1.0/libusb.h>
+#include <thread>
 
 #include "drv_types.h"
 #include "hal_com_reg.h"
 #include "logger.h"
+
 
 
 #define rtw_read8 rtw_read<uint8_t>

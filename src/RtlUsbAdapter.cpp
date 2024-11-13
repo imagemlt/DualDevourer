@@ -1,17 +1,23 @@
 #include "RtlUsbAdapter.h"
 
 #include <chrono>
+#include <libusb-1.0/libusb.h>
 #include <thread>
 #include <iostream>
 #include "FrameParser.h"
 #include "Hal8812PhyReg.h"
+#include "logger.h"
 #include <iomanip>
 
 using namespace std::chrono_literals;
 
+
 RtlUsbAdapter::RtlUsbAdapter(libusb_device_handle *dev_handle, Logger_t logger)
     : _dev_handle{dev_handle}, _logger{logger} {
   InitDvObj();
+  //global_logger = logger;
+
+  //std::thread event_thread(usb_event_loop, logger);
   
   if (usbSpeed > LIBUSB_SPEED_HIGH) // USB 3.0
   {
@@ -317,21 +323,43 @@ void RtlUsbAdapter::GetChipOutEP8812() {
                 OutEpNumber);
 }
 
+void transfer_callback(struct libusb_transfer *transfer){
+  spdlog::logger* _logger = (spdlog::logger*)(transfer->user_data);
+  if (transfer->status == LIBUSB_TRANSFER_COMPLETED && transfer->actual_length == transfer->length) {
+    _logger->info("Packet {} sent successfully, length: {}", fmt::ptr(transfer->buffer),transfer->length);
+  } else {
+    _logger->error("Failed to send packet {}, status: {}, actual length: {}",fmt::ptr(transfer->buffer), transfer->status, transfer->actual_length);
+  }
+  //_logger->warn("finished transfer {}",fmt::ptr(transfer->buffer));
+  delete[] transfer->buffer;
+  libusb_free_transfer(transfer);
+}
+
+
 bool RtlUsbAdapter::send_packet(uint8_t* packet, size_t length) {
 
   //_logger->info("Calculate chksum");
 	
 	
-  int actual_length = 0;
+  //int actual_length = 0;
+  libusb_transfer* transfer = libusb_alloc_transfer(0);
+  if (!transfer) {
+      _logger->error("Failed to allocate transfer");
+      return false;
+  }
+
+  libusb_fill_bulk_transfer(transfer, _dev_handle, 0x02, packet, length,transfer_callback,(void*)(_logger.get()),USB_TIMEOUT);
   auto start = std::chrono::high_resolution_clock::now();
-  int rc = libusb_bulk_transfer(_dev_handle, 0x02, packet, length, &actual_length, USB_TIMEOUT);
+  //int rc = libusb_bulk_transfer(_dev_handle, 0x02, packet, length, &actual_length, USB_TIMEOUT);
+  int rc = rc = libusb_submit_transfer(transfer);
   auto end = std::chrono::high_resolution_clock::now();
   std::chrono::duration<double, std::milli> elapsed = end - start;
-  if (rc == LIBUSB_SUCCESS && actual_length == length) {
+  if (rc == LIBUSB_SUCCESS) {
     _logger->info("Packet sent successfully, length: {},used time {}ms", length,elapsed.count());
      return true;
   } else {
-    _logger->error("Failed to send packet, error code: {}, actual length: {}", rc, actual_length);
+    _logger->error("Failed to send packet, error code: {}", rc);
+    libusb_free_transfer(transfer);
     return false;
   }
 }

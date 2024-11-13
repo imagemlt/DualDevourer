@@ -232,7 +232,7 @@ bool Rtl8812aDevice::send_packet(const uint8_t *packet, size_t length) {
   std::cout << std::dec << std::endl; // Reset to decimal formatting
 
   resp = _device.send_packet(usb_frame, usb_frame_length);
-  delete[] usb_frame;
+  //delete[] usb_frame;
   return resp;
 }
 
@@ -243,30 +243,6 @@ void Rtl8812aDevice::Init(Action_ParsedRadioPacket packetProcessor,
   debug = 0;
   StartWithMonitorMode(channel);
   SetMonitorChannel(channel);
-
-  // 設置無線模式爲支持任何協議
-  /*
-    _device.rtw_write8(REG_RESP_SIFS_CCK,static_cast<uint8_t>(0x08));
-    _device.rtw_write8(REG_RESP_SIFS_CCK + 1, static_cast<uint8_t>(0x08));
-    _device.rtw_write8(REG_RESP_SIFS_OFDM, static_cast<uint8_t>(0x0a)); /*
-    SIFS_T2T_OFDM (0x0a) _device.rtw_write8(REG_RESP_SIFS_OFDM + 1,
-    static_cast<uint8_t>(0x0a)); /* SIFS_R2T_OFDM(0x0a) u8	R2T_SIFS = 0xa,
-    SIFS_Timer = 0xe; //先不支持vht試試看看效果
-
-    _device.rtw_write8(REG_SIFS_CTX + 1, SIFS_Timer);
-                  // SIFS for OFDM consecutive tx like CTS data!
-          _device.rtw_write8(REG_SIFS_TRX + 1, SIFS_Timer);
-
-          _device.rtw_write8(REG_SPEC_SIFS + 1, SIFS_Timer);
-          _device.rtw_write8(REG_MAC_SPEC_SIFS + 1, SIFS_Timer);
-
-                  /* 20100719 Joseph: Revise SIFS setting due to Hardware
-    register definition change. _device.rtw_write8(REG_RESP_SIFS_OFDM + 1,
-    SIFS_Timer); _device.rtw_write8(REG_RESP_SIFS_OFDM, SIFS_Timer);
-
-    _device.rtw_write8(REG_RESP_SIFS_OFDM + 1, R2T_SIFS);
-  */
-  _logger->info("設置爲支持多種調製模式");
   _logger->info("Listening air...");
 
   for (;;)
