@@ -1,7 +1,11 @@
 #include "RtlUsbAdapter.h"
 
 #include <chrono>
-#include <libusb-1.0/libusb.h>
+#ifdef __ANDROID__
+  #include <libusb.h>
+#else
+  #include <libusb-1.0/libusb.h>
+#endif
 #include <thread>
 #include <iostream>
 #include "FrameParser.h"
