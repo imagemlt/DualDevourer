@@ -59,26 +59,19 @@ $ lsusb -v -d 0bda:8812
         bInterval               0
 */
 
-void RtlUsbAdapter::infinite_read() {
-  uint8_t buffer[65000] = {0};
-  int actual_length = 0;
-  int rc;
+std::vector<Packet> RtlUsbAdapter::infinite_read() {
+    uint8_t buffer[65000] = {0};
+    int actual_length = 0;
+    int rc;
 
-  rc = libusb_bulk_transfer(_dev_handle, 0x81, buffer, sizeof(buffer),
-                            &actual_length, USB_TIMEOUT * 10);
-
-  if (actual_length > 1000) {
-
-    FrameParser fp{_logger};
-    std::vector<Packet> packets =
-        fp.recvbuf2recvframe(std::span<uint8_t>{buffer, (size_t)actual_length});
-    for (auto &p : packets) {
-      _logger->warn("frame control 0x{:02x} 0x{:02x}", (uint8_t)p.Data[0],
-      (uint8_t)p.Data[1]); _logger->warn("duration id 0x{:02x} 0x{:02x}",
-      (uint8_t)p.Data[2], (uint8_t)p.Data[3]);
+    rc = libusb_bulk_transfer(_dev_handle, 0x81, buffer, sizeof(buffer),
+                              &actual_length, USB_TIMEOUT * 10);
+    std::vector<Packet> packets;
+    if (actual_length > 1000) {
+        FrameParser fp{_logger};
+        packets = fp.recvbuf2recvframe(std::span<uint8_t>{buffer, (size_t)actual_length});
     }
-    printf("received %d bytes\n", actual_length);
-  }
+    return packets;
 }
 
 bool RtlUsbAdapter::WriteBytes(uint16_t reg_num, uint8_t *ptr, size_t size) {
@@ -328,11 +321,11 @@ void RtlUsbAdapter::GetChipOutEP8812() {
 }
 
 void transfer_callback(struct libusb_transfer *transfer){
-  spdlog::logger* _logger = (spdlog::logger*)(transfer->user_data);
+    logger* _logger = (logger*)(transfer->user_data);
   if (transfer->status == LIBUSB_TRANSFER_COMPLETED && transfer->actual_length == transfer->length) {
-    _logger->info("Packet {} sent successfully, length: {}", fmt::ptr(transfer->buffer),transfer->length);
+    _logger->info("Packet {} sent successfully, length: {}",_logger,transfer->length);
   } else {
-    _logger->error("Failed to send packet {}, status: {}, actual length: {}",fmt::ptr(transfer->buffer), transfer->status, transfer->actual_length);
+    _logger->error("Failed to send packet {}, status: {}, actual length: {}",_logger, transfer->status, transfer->actual_length);
   }
   //_logger->warn("finished transfer {}",fmt::ptr(transfer->buffer));
   delete[] transfer->buffer;

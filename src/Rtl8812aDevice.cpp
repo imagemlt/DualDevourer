@@ -245,9 +245,12 @@ void Rtl8812aDevice::Init(Action_ParsedRadioPacket packetProcessor,
   SetMonitorChannel(channel);
   _logger->info("Listening air...");
 
-  for (;;)
-    _device.infinite_read();
-
+  while(!should_stop) {
+      auto packets = _device.infinite_read();
+      for (auto& p : packets) {
+          _packetProcessor(p);
+      }
+  }
 #if 0
   _device.UsbDevice.SetBulkDataHandler(BulkDataHandler);
   _readTask = Task.Run(() = > _device.UsbDevice.InfinityRead());

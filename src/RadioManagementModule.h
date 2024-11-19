@@ -2,6 +2,7 @@
 #define RADIOMANAGEMENTMODULE_H
 
 #include <cstdint>
+#include <vector>
 
 #include "EepromManager.h"
 #include "RfPath.h"

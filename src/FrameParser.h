@@ -3,6 +3,7 @@
 
 #include "logger.h"
 #include <span>
+#include <vector>
 //#include <net/ieee80211_radiotap.h>
 
 typedef unsigned int __u32;

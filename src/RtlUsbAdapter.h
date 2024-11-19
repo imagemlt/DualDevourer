@@ -14,7 +14,7 @@
 #include "drv_types.h"
 #include "hal_com_reg.h"
 #include "logger.h"
-
+#include "FrameParser.h"
 
 
 #define rtw_read8 rtw_read<uint8_t>
@@ -55,7 +55,7 @@ public:
   uint8_t rxagg_usb_size;
   uint8_t rxagg_usb_timeout;
   bool send_packet(uint8_t* packet, size_t length);
-  void infinite_read();
+  std::vector<Packet> infinite_read();
   uint8_t efuse_OneByteRead(uint16_t addr, uint8_t *data);
   void phy_set_bb_reg(uint16_t regAddr, uint32_t bitMask, uint32_t data);
 

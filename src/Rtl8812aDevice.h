@@ -20,7 +20,7 @@ extern "C"
 
 
 
-using Action_ParsedRadioPacket = std::function<void(const ParsedRadioPacket&)>;
+using Action_ParsedRadioPacket = std::function<void(const Packet&)>;
 
 class Rtl8812aDevice {
   std::shared_ptr<EepromManager> _eepromManager;
@@ -40,6 +40,7 @@ public:
   void SetTxPower(uint8_t power);
   bool send_packet(const uint8_t* packet, size_t length);
   SelectedChannel GetSelectedChannel();
+  bool should_stop = false;
 
 private:
   void StartWithMonitorMode(SelectedChannel selectedChannel);
