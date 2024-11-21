@@ -204,6 +204,7 @@ bool Rtl8812aDevice::send_packet(const uint8_t *packet, size_t length) {
 
   rtl8812a_cal_txdesc_chksum(usb_frame);
   _logger->info("tx desc formed");
+  #ifdef DEBUG
   for (size_t i = 0; i < usb_frame_length; ++i) {
     // Print each byte as a two-digit hexadecimal number
     std::cout << "0x" << std::hex << std::setw(2) << std::setfill('0')
@@ -215,10 +216,12 @@ bool Rtl8812aDevice::send_packet(const uint8_t *packet, size_t length) {
     }
   }
   std::cout << std::dec << std::endl; // Reset to decimal formatting
-                                      // ----- end of fill tx desc -----
+        	                        // ----- end of fill tx desc -----
+  #endif
   uint8_t *addr = usb_frame + TXDESC_SIZE;
   memcpy(addr, packet + radiotap_length, real_packet_length);
   _logger->info("packet formed");
+  #ifdef DEBUG
   for (size_t i = 0; i < usb_frame_length; ++i) {
     // Print each byte as a two-digit hexadecimal number
     std::cout << "0x" << std::hex << std::setw(2) << std::setfill('0')
@@ -230,7 +233,7 @@ bool Rtl8812aDevice::send_packet(const uint8_t *packet, size_t length) {
     }
   }
   std::cout << std::dec << std::endl; // Reset to decimal formatting
-
+  #endif
   resp = _device.send_packet(usb_frame, usb_frame_length);
   //delete[] usb_frame;
   return resp;
