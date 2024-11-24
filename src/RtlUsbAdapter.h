@@ -3,11 +3,7 @@
 
 #include <iostream>
 
-#ifdef __ANDROID__
-  #include <libusb.h>
-#else
-  #include <libusb-1.0/libusb.h>
-#endif
+#include <libusb-1.0/libusb.h>
 
 #include <thread>
 

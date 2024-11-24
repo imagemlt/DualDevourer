@@ -3,11 +3,7 @@
 #include <memory>
 #include <string>
 
-#ifdef __ANDROID__
-  #include <libusb.h>
-#else
-  #include <libusb-1.0/libusb.h>
-#endif
+#include <libusb-1.0/libusb.h>
 
 #include <spdlog/sinks/android_sink.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
