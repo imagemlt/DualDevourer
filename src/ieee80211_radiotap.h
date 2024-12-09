@@ -1,3 +1,5 @@
+#ifndef IEEE80211_RADIOTAP_H
+#define IEEE80211_RADIOTAP_H
 
 #include <errno.h>
 #include <stdint.h>
@@ -529,3 +531,5 @@ int ieee80211_radiotap_iterator_next(
 
 u16 GetSequence(const u8 *packet);
 u8 MRateToHwRate(u8 rate);
+
+#endif

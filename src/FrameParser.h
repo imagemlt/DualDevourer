@@ -3,27 +3,22 @@
 
 #include "logger.h"
 #include <span>
-//#include <net/ieee80211_radiotap.h>
 
 typedef unsigned int __u32;
 
 #ifndef __u16
-	typedef unsigned short __u16;
+  typedef unsigned short __u16;
 #endif
 
 
 typedef signed char s8;
-	typedef unsigned char u8;
+typedef unsigned char u8;
 
-	typedef signed short s16;
-	typedef unsigned short u16;
+typedef signed short s16;
+typedef unsigned short u16;
 
-	typedef signed int s32;
-	typedef unsigned int u32;
-
-
-
-
+typedef signed int s32;
+typedef unsigned int u32;
 
 
 #ifndef BIT
@@ -479,6 +474,3 @@ struct tx_desc {
 
 void rtl8812a_cal_txdesc_chksum(uint8_t *ptxdesc);
 #endif /* FRAMEPARSER_H */
-
-void radiotap_to_txdesc(uint8_t *packet,uint8_t *usb_frame);
-
